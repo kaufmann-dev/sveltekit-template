@@ -1,8 +1,8 @@
 # Project Templates
 
-A collection of lightweight configuration overlays containing only AI-agent settings, MCP servers, and skills for OpenCode and Codex (without framework boilerplate).
+These are lightweight configuration templates for OpenCode and Codex. They only add AI agent settings, MCP servers, and custom skills—no framework boilerplate or project code.
 
-To scaffold or merge these configurations into a directory, run the corresponding `degit` command.
+To drop these settings directly into your project, just run the corresponding `degit` command.
 
 ## Astro
 
@@ -14,10 +14,4 @@ npx degit kaufmann-dev/project-templates/astro .
 
 ```bash
 npx degit kaufmann-dev/project-templates/sveltekit .
-```
-
-## Next.js
-
-```bash
-npx degit kaufmann-dev/project-templates/next-js .
 ```
