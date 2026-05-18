@@ -4,14 +4,25 @@ These are lightweight configuration templates for OpenCode and Codex. They only 
 
 To drop these settings directly into your project, just run the corresponding `degit` command.
 
-## Astro
+## Stable
 
 ```bash
-npx degit kaufmann-dev/project-templates/astro .
+# SvelteKit
+npx degit kaufmann-dev/project-templates/sveltekit .
 ```
 
-## SvelteKit
+## Under Development
 
 ```bash
-npx degit kaufmann-dev/project-templates/sveltekit .
+# Astro
+npx degit kaufmann-dev/project-templates/astro .
+
+# Hono API
+npx degit kaufmann-dev/project-templates/hono-api .
+
+# Hono API Finance
+npx degit kaufmann-dev/project-templates/hono-api-finance .
+
+# Next.js
+npx degit kaufmann-dev/project-templates/nextjs .
 ```
