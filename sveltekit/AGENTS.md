@@ -10,10 +10,12 @@ Project-scoped MCP config lives in `.codex/config.toml` for Codex, `.config/open
 
 - `svelte` is enabled. Use it for current Svelte 5 and SvelteKit documentation and autofixing.
 - `shadcn-svelte` is enabled. Use it for shadcn-svelte component documentation, Bits UI documentation, and Lucide Svelte icon lookup.
-- `playwright` is optional. Use it only when browser automation or end-to-end test work is required.
-- `postgres` is optional and requires `DATABASE_URL`.
-- `resend` is optional and requires `RESEND_API_KEY`.
-- `glitchtip` is optional and requires `GLITCHTIP_MCP_URL`.
+- `playwright` is optional and disabled only in Codex/OpenCode. Use it only when browser automation or end-to-end test work is required.
+- `postgres` is optional, disabled only in Codex/OpenCode, and requires `DATABASE_URL`.
+- `resend` is optional, disabled only in Codex/OpenCode, and requires `RESEND_API_KEY`.
+- `glitchtip` is optional, disabled only in Codex/OpenCode, and requires `GLITCHTIP_MCP_URL`.
+
+Do not add optional MCP servers to Gemini CLI or Claude Code by default because their project configs do not safely support disabled MCP entries.
 
 No MCP server is configured for Tailwind CSS, Iconify, mode-watcher, Better Auth, better-svelte-email, Superforms, Zod, Paraglide, Plausible, or Drizzle because no official or high-confidence project MCP server was identified for normal template use. Use the installed skills and the current package documentation instead.
 

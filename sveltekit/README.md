@@ -16,9 +16,11 @@ Enabled by default:
 - `svelte`
 - `shadcn-svelte`
 
-Optional, environment-dependent:
+Optional, disabled in Codex and OpenCode only:
 
 - `playwright`
 - `postgres` via `DATABASE_URL`
 - `resend` via `RESEND_API_KEY`
 - `glitchtip` via `GLITCHTIP_MCP_URL`
+
+Gemini CLI and Claude Code only include the default servers because their project configs do not safely support disabled MCP entries.

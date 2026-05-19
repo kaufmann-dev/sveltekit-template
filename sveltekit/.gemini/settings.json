@@ -5,24 +5,6 @@
     },
     "shadcn-svelte": {
       "httpUrl": "https://shadcn-svelte.mastra.cloud/api/mcp/shadcn/mcp"
-    },
-    "playwright": {
-      "command": "npx",
-      "args": ["-y", "@playwright/mcp@latest"]
-    },
-    "postgres": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-postgres", "${DATABASE_URL}"]
-    },
-    "resend": {
-      "command": "npx",
-      "args": ["-y", "resend-mcp"],
-      "env": {
-        "RESEND_API_KEY": "${RESEND_API_KEY}"
-      }
-    },
-    "glitchtip": {
-      "httpUrl": "${GLITCHTIP_MCP_URL}"
     }
   }
 }
