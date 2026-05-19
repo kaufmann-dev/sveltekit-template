@@ -4,6 +4,21 @@ Svelte 5 introduced a fundamentally new paradigm — runes, snippets, fine-grain
 
 ---
 
+## MCP Servers
+
+Project-scoped MCP config lives in `.codex/config.toml` for Codex, `.config/opencode/opencode.jsonc` for OpenCode, `.gemini/settings.json` for Gemini CLI, and `.mcp.json` for Claude Code. Svelte is also configured for OpenCode through `@sveltejs/opencode` and `.config/opencode/svelte.json`.
+
+- `svelte` is enabled. Use it for current Svelte 5 and SvelteKit documentation and autofixing.
+- `shadcn-svelte` is enabled. Use it for shadcn-svelte component documentation, Bits UI documentation, and Lucide Svelte icon lookup.
+- `playwright` is optional. Use it only when browser automation or end-to-end test work is required.
+- `postgres` is optional and requires `DATABASE_URL`.
+- `resend` is optional and requires `RESEND_API_KEY`.
+- `glitchtip` is optional and requires `GLITCHTIP_MCP_URL`.
+
+No MCP server is configured for Tailwind CSS, Iconify, mode-watcher, Better Auth, better-svelte-email, Superforms, Zod, Paraglide, Plausible, or Drizzle because no official or high-confidence project MCP server was identified for normal template use. Use the installed skills and the current package documentation instead.
+
+---
+
 You are able to use the Svelte MCP server, where you have access to comprehensive Svelte 5 and SvelteKit documentation. Here's how to use the available tools effectively:
 
 ## Available Svelte MCP Tools:
@@ -31,6 +46,7 @@ You MUST use this tool whenever writing Svelte code before sending it to the use
 Generates a Svelte Playground link with the provided code.
 
 After completing the code, ask the user if they want a playground link. Only call this tool after user confirmation and NEVER if code was written to files in their project.
+
 
 ---
 
