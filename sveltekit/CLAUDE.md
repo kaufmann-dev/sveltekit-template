@@ -6,18 +6,24 @@ Svelte 5 introduced a fundamentally new paradigm — runes, snippets, fine-grain
 
 ## MCP Servers
 
-Project-scoped MCP config lives in `.codex/config.toml` for Codex, `.config/opencode/opencode.jsonc` for OpenCode, `.gemini/settings.json` for Gemini CLI, and `.mcp.json` for Claude Code. Svelte is also configured for OpenCode through `@sveltejs/opencode` and `.config/opencode/svelte.json`.
+Use project-scoped MCP configuration when your agent tool supports it. Do not put secrets directly in MCP config files; reference environment variables instead.
 
 - `svelte` is enabled. Use it for current Svelte 5 and SvelteKit documentation and autofixing.
 - `shadcn-svelte` is enabled. Use it for shadcn-svelte component documentation, Bits UI documentation, and Lucide Svelte icon lookup.
-- `playwright` is optional and disabled only in Codex/OpenCode. Use it only when browser automation or end-to-end test work is required.
-- `postgres` is optional, disabled only in Codex/OpenCode, and requires `DATABASE_URL`.
-- `resend` is optional, disabled only in Codex/OpenCode, and requires `RESEND_API_KEY`.
-- `glitchtip` is optional, disabled only in Codex/OpenCode, and requires `GLITCHTIP_MCP_URL`.
+- `playwright` is optional. Use it only when browser automation or end-to-end test work is required.
+- `postgres` is optional and requires `DATABASE_URL`.
+- `resend` is optional and requires `RESEND_API_KEY`.
+- `glitchtip` is optional and requires `GLITCHTIP_MCP_URL`.
 
-Do not add optional MCP servers to Gemini CLI or Claude Code by default because their project configs do not safely support disabled MCP entries.
+Do not add optional MCP servers by default in tools that cannot safely keep MCP entries disabled. Prefer only the default `svelte` and `shadcn-svelte` servers unless the optional feature is actually needed.
 
 No MCP server is configured for Tailwind CSS, Iconify, mode-watcher, Better Auth, better-svelte-email, Superforms, Zod, Paraglide, Plausible, or Drizzle because no official or high-confidence project MCP server was identified for normal template use. Use the installed skills and the current package documentation instead.
+
+## Svelte Subagents
+
+Use the Svelte file-editor subagent for Svelte component or Svelte module work when your agent tool supports project subagents.
+
+Keep the Svelte skills in `.agents/skills`. The Svelte MCP server is the canonical source for documentation and autofixing; the Svelte skills provide on-demand workflow instructions and CLI fallback guidance.
 
 ---
 
@@ -239,6 +245,12 @@ Use `setMode("light" | "dark" | "system")` or `toggleMode` from `mode-watcher` f
 ## Drizzle Workflow
 
 Use Drizzle for database access and migrations. After schema changes, generate and run migrations with Drizzle Kit (`drizzle-kit generate`, then `drizzle-kit migrate`) instead of hand-writing migration state.
+
+## Development Database
+
+During development, use the manually managed Docker PostgreSQL database named `postgres-sveltekit`.
+
+Do not turn the local Docker command into production deployment guidance. Production deployment and database provisioning are handled separately through Coolify.
 
 ---
 
