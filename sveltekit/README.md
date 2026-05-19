@@ -46,7 +46,7 @@ ORIGIN="http://localhost:5173"
 Run PostgreSQL locally with Docker:
 
 ```bash
-docker run --name postgres-dev --env-file .env --publish 5432:5432 --volume postgres-dev-data:/var/lib/postgresql/data --detach postgres:18-alpine
+docker run --name postgres-sveltekit --env-file .env --publish 5432:5432 --volume postgres-sveltekit-data:/var/lib/postgresql/data --detach postgres:18-alpine
 ```
 
 Keep the generated `BETTER_AUTH_SECRET` value, or replace it with a new high-entropy secret. If you change `POSTGRES_USER`, `POSTGRES_PASSWORD`, or `POSTGRES_DB`, update `DATABASE_URL` to match.

@@ -246,6 +246,12 @@ Use `setMode("light" | "dark" | "system")` or `toggleMode` from `mode-watcher` f
 
 Use Drizzle for database access and migrations. After schema changes, generate and run migrations with Drizzle Kit (`drizzle-kit generate`, then `drizzle-kit migrate`) instead of hand-writing migration state.
 
+## Development Database
+
+During development, use the manually managed Docker PostgreSQL database named `postgres-sveltekit`.
+
+Do not turn the local Docker command into production deployment guidance. Production deployment and database provisioning are handled separately through Coolify.
+
 ---
 
 ## Technology Stack
