@@ -14,13 +14,14 @@
 Start with a minimal TypeScript SvelteKit app, install with pnpm, and add the required official `sv` add-ons:
 
 ```bash
+mkdir my-app
+cd my-app
 pnpm dlx sv create --template minimal --types ts --add tailwindcss="plugins:none" drizzle="database:postgresql+client:postgres.js+docker:no" better-auth="demo:password" eslint prettier paraglide="languageTags:en,de+demo:no" sveltekit-adapter="adapter:node" --install pnpm . --no-dir-check
 ```
 
 Then apply this agent template inside the project:
 
 ```bash
-cd my-app
 pnpm dlx degit kaufmann-dev/project-templates/sveltekit .
 ```
 
