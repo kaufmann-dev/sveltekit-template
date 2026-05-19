@@ -22,7 +22,7 @@ pnpm dlx sv create --template minimal --types ts --add tailwindcss="plugins:none
 Then apply this agent template inside the project:
 
 ```bash
-pnpm dlx degit kaufmann-dev/project-templates/sveltekit .
+pnpm dlx degit kaufmann-dev/project-templates/sveltekit . --force --mode=tar
 ```
 
 Add the required non-`sv` packages after creation:
@@ -77,6 +77,7 @@ docker logs postgres-sveltekit
 ## Included
 
 - `AGENTS.md` with SvelteKit, Svelte 5, shadcn-svelte, auth, database, testing, and tooling instructions.
+- `pnpm-workspace.yaml` with pnpm build-script approvals for the selected stack.
 - `.agents/skills/` and `skills-lock.json` with project-local skills, including the Svelte skills from `@sveltejs/mcp`.
 - MCP configuration for Codex, OpenCode, Gemini CLI, and Claude Code.
 - Svelte file-editor subagents for Codex, OpenCode, Claude Code, and Gemini CLI.
