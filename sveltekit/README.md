@@ -3,6 +3,7 @@
 
 ## Contents
 - [Create The App](#create-the-app)
+- [Development Database](#development-database)
 - [Included](#included)
 - [MCP Servers](#mcp-servers)
 - [Optional Add-Ons](#optional-add-ons)
@@ -12,7 +13,7 @@
 Start with a minimal TypeScript SvelteKit app, install with pnpm, and add the required official `sv` add-ons:
 
 ```bash
-npx sv create --template minimal --types ts --add tailwindcss="plugins:none" drizzle="database:postgresql+client:postgres.js+docker:no" better-auth="demo:password" eslint prettier paraglide="languageTags:en,de+demo:no" sveltekit-adapter="adapter:node" --install pnpm my-app
+npx sv create --template minimal --types ts --add tailwindcss="plugins:none" drizzle="database:postgresql+client:postgres.js+docker:no" better-auth="demo:password" eslint prettier paraglide="languageTags:en,de+demo:no" sveltekit-adapter="adapter:node" --install pnpm . --no-dir-check
 ```
 
 Then apply this agent template inside the project:
@@ -28,6 +29,33 @@ Add the required non-`sv` packages after creation:
 pnpm add mode-watcher
 pnpm add -D @iconify/tailwind4
 npx shadcn-svelte@latest init
+```
+
+## Development Database
+
+Run PostgreSQL locally with Docker:
+
+```bash
+docker run --name <db-name>-postgres --env POSTGRES_USER=<username> --env POSTGRES_PASSWORD=<password> --env POSTGRES_DB=<db-name> --publish 5432:5432 --volume <db-name>-postgres-data:/var/lib/postgresql/data --detach postgres:18-alpine
+```
+
+Set the generated `.env` database URL to match:
+
+```bash
+DATABASE_URL="postgres://<username>:<password>@localhost:5432/<db-name>"
+ORIGIN="http://localhost:5173"
+```
+
+Use lowercase letters, numbers, and underscores for `<username>` and `<db-name>`.
+
+Keep the generated `BETTER_AUTH_SECRET` value, or replace it with a new high-entropy secret.
+
+Useful Docker commands:
+
+```bash
+docker start <db-name>-postgres
+docker stop <db-name>-postgres
+docker logs <db-name>-postgres
 ```
 
 ## Included
