@@ -33,9 +33,9 @@ npx shadcn-svelte@latest init
 ## Included
 
 - `AGENTS.md` with SvelteKit, Svelte 5, shadcn-svelte, auth, database, testing, and tooling instructions.
-- `.agents/skills/` and `skills-lock.json` with project-local skills.
+- `.agents/skills/` and `skills-lock.json` with project-local skills, including the Svelte skills from `@sveltejs/mcp`.
 - MCP configuration for Codex, OpenCode, Gemini CLI, and Claude Code.
-- A Codex Svelte file-editor subagent.
+- Svelte file-editor subagents for Codex, OpenCode, Claude Code, and Gemini CLI.
 
 ## MCP Servers
 
