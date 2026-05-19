@@ -30,8 +30,10 @@ Add the required non-`sv` packages after creation:
 ```bash
 pnpm add mode-watcher
 pnpm add -D @iconify/tailwind4
-pnpm dlx shadcn-svelte@latest init --preset luma --css src/routes/layout.css --lib-alias '$lib' --components-alias '$lib/components' --ui-alias '$lib/components/ui' --utils-alias '$lib/utils' --hooks-alias '$lib/hooks'
+pnpm dlx shadcn-svelte@latest init --css src/routes/layout.css --lib-alias '$lib' --components-alias '$lib/components' --ui-alias '$lib/components/ui' --utils-alias '$lib/utils' --hooks-alias '$lib/hooks'
 ```
+
+When prompted for the design system preset, choose `Luma`.
 
 ## Development Commands
 
