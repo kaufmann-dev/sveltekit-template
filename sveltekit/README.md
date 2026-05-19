@@ -9,10 +9,10 @@
 
 ## Create The App
 
-Start with a minimal TypeScript SvelteKit app, install with pnpm, and add only the required official `sv` add-ons:
+Start with a minimal TypeScript SvelteKit app, install with pnpm, and add the required official `sv` add-ons:
 
 ```bash
-npx sv create --template minimal --types ts --add tailwindcss drizzle better-auth sveltekit-adapter="adapter:node" --install pnpm my-app
+npx sv create --template minimal --types ts --add tailwindcss="plugins:none" drizzle="database:postgresql+client:postgres.js+docker:no" better-auth="demo:password" eslint prettier paraglide="languageTags:en,de+demo:no" sveltekit-adapter="adapter:node" --install pnpm my-app
 ```
 
 Then apply this agent template inside the project:
@@ -60,9 +60,6 @@ Only add optional technologies when the feature is actually needed.
 Official `sv add` examples:
 
 ```bash
-# Internationalisation
-npx sv add paraglide --install pnpm
-
 # Unit or component tests
 npx sv add vitest --install pnpm
 
