@@ -243,13 +243,13 @@ Always test migrations in staging before applying to production:
 pg_dump $DATABASE_URL > backup.sql
 
 # 2. Test migration in staging
-npx drizzle-kit migrate
+pnpm exec drizzle-kit migrate
 
 # 3. Verify application compatibility
-npm run test
+pnpm test
 
 # 4. Apply to production during maintenance window
-npx drizzle-kit migrate
+pnpm exec drizzle-kit migrate
 ```
 
 ### Soft Delete Queries

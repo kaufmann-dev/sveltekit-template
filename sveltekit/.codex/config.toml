@@ -7,18 +7,18 @@ url = "https://shadcn-svelte.mastra.cloud/api/mcp/shadcn/mcp"
 enabled = true
 
 [mcp_servers.playwright]
-command = "npx"
-args = ["-y", "@playwright/mcp@latest"]
+command = "pnpm"
+args = ["dlx", "@playwright/mcp@latest"]
 enabled = false
 
 [mcp_servers.postgres]
-command = "npx"
-args = ["-y", "@modelcontextprotocol/server-postgres", "${DATABASE_URL}"]
+command = "pnpm"
+args = ["dlx", "@modelcontextprotocol/server-postgres", "${DATABASE_URL}"]
 enabled = false
 
 [mcp_servers.resend]
-command = "npx"
-args = ["-y", "resend-mcp"]
+command = "pnpm"
+args = ["dlx", "resend-mcp"]
 env = { RESEND_API_KEY = "${RESEND_API_KEY}" }
 enabled = false
 

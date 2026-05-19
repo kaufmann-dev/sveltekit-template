@@ -17,7 +17,7 @@ A comprehensive agent skill for building production-ready email systems. Covers 
 ## Installation
 
 ```bash
-npx skills add resend/email-best-practices
+pnpm dlx skills add resend/email-best-practices
 ```
 
 ## What This Skill Covers

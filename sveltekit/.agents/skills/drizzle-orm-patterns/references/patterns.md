@@ -516,16 +516,16 @@ export default defineConfig({
 
 ```bash
 # Generate migration files from schema
-npx drizzle-kit generate
+pnpm exec drizzle-kit generate
 
 # Apply pending migrations
-npx drizzle-kit migrate
+pnpm exec drizzle-kit migrate
 
 # Push schema directly to DB (for development)
-npx drizzle-kit push
+pnpm exec drizzle-kit push
 
 # Pull schema from existing database
-npx drizzle-kit pull
+pnpm exec drizzle-kit pull
 ```
 
 ### Programmatic Migration

@@ -11,7 +11,7 @@ Use the Svelte MCP server as the source of truth. Before changing Svelte or Svel
 
 Use the `svelte-code-writer` and `svelte-core-bestpractices` skills when available. They provide the CLI fallback workflow and compact Svelte 5 best-practice reminders.
 
-If the Svelte MCP tools are not available, run `npx @sveltejs/mcp@latest -y --help` to learn how to access the same documentation and autofixer through the CLI.
+If the Svelte MCP tools are not available, run `pnpm dlx @sveltejs/mcp@latest --help` to learn how to access the same documentation and autofixer through the CLI.
 
 Workflow:
 

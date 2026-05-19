@@ -8,21 +8,21 @@ To drop these settings directly into your project, just run the corresponding `d
 
 ```bash
 # SvelteKit
-npx degit kaufmann-dev/project-templates/sveltekit .
+pnpm dlx degit kaufmann-dev/project-templates/sveltekit .
 ```
 
 ## Under Development
 
 ```bash
 # Astro
-npx degit kaufmann-dev/project-templates/astro .
+pnpm dlx degit kaufmann-dev/project-templates/astro .
 
 # Hono API
-npx degit kaufmann-dev/project-templates/hono-api .
+pnpm dlx degit kaufmann-dev/project-templates/hono-api .
 
 # Hono API Finance
-npx degit kaufmann-dev/project-templates/hono-api-finance .
+pnpm dlx degit kaufmann-dev/project-templates/hono-api-finance .
 
 # Next.js
-npx degit kaufmann-dev/project-templates/nextjs .
+pnpm dlx degit kaufmann-dev/project-templates/nextjs .
 ```

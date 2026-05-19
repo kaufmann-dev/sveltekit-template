@@ -14,14 +14,14 @@
 Start with a minimal TypeScript SvelteKit app, install with pnpm, and add the required official `sv` add-ons:
 
 ```bash
-npx sv create --template minimal --types ts --add tailwindcss="plugins:none" drizzle="database:postgresql+client:postgres.js+docker:no" better-auth="demo:password" eslint prettier paraglide="languageTags:en,de+demo:no" sveltekit-adapter="adapter:node" --install pnpm . --no-dir-check
+pnpm dlx sv create --template minimal --types ts --add tailwindcss="plugins:none" drizzle="database:postgresql+client:postgres.js+docker:no" better-auth="demo:password" eslint prettier paraglide="languageTags:en,de+demo:no" sveltekit-adapter="adapter:node" --install pnpm . --no-dir-check
 ```
 
 Then apply this agent template inside the project:
 
 ```bash
 cd my-app
-npx degit kaufmann-dev/project-templates/sveltekit .
+pnpm dlx degit kaufmann-dev/project-templates/sveltekit .
 ```
 
 Add the required non-`sv` packages after creation:
@@ -29,7 +29,7 @@ Add the required non-`sv` packages after creation:
 ```bash
 pnpm add mode-watcher
 pnpm add -D @iconify/tailwind4
-npx shadcn-svelte@latest init
+pnpm dlx shadcn-svelte@latest init --preset luma --css src/routes/layout.css --lib-alias '$lib' --components-alias '$lib/components' --ui-alias '$lib/components/ui' --utils-alias '$lib/utils' --hooks-alias '$lib/hooks'
 ```
 
 ## Development Commands
@@ -104,10 +104,10 @@ Official `sv add` examples:
 
 ```bash
 # Unit or component tests
-npx sv add vitest --install pnpm
+pnpm dlx sv add vitest --install pnpm
 
 # End-to-end tests
-npx sv add playwright --install pnpm
+pnpm dlx sv add playwright --install pnpm
 ```
 
 Other optional stack choices from `AGENTS.md`, such as Superforms, Resend, better-svelte-email, Plausible, and GlitchTip, are not listed as official `sv add` add-ons. Install and configure them only when their feature is needed.

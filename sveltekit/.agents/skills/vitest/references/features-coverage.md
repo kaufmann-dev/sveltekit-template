@@ -59,7 +59,7 @@ defineConfig({
 ### V8 (Default)
 
 ```bash
-npm i -D @vitest/coverage-v8
+pnpm add -D @vitest/coverage-v8
 ```
 
 - Faster, no pre-instrumentation
@@ -69,7 +69,7 @@ npm i -D @vitest/coverage-v8
 ### Istanbul
 
 ```bash
-npm i -D @vitest/coverage-istanbul
+pnpm add -D @vitest/coverage-istanbul
 ```
 
 - Pre-instruments code
@@ -173,7 +173,7 @@ Run with `vitest --ui` to view coverage visually.
 ```yaml
 # GitHub Actions
 - name: Run tests with coverage
-  run: npm run test:coverage
+  run: ppnpm test:coverage
 
 - name: Upload coverage to Codecov
   uses: codecov/codecov-action@v3

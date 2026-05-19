@@ -13,17 +13,17 @@
         },
         "playwright": {
             "type": "local",
-            "command": ["npx", "-y", "@playwright/mcp@latest"],
+            "command": ["pnpm", "dlx", "@playwright/mcp@latest"],
             "enabled": false
         },
         "postgres": {
             "type": "local",
-            "command": ["npx", "-y", "@modelcontextprotocol/server-postgres", "{env:DATABASE_URL}"],
+            "command": ["pnpm", "dlx", "@modelcontextprotocol/server-postgres", "{env:DATABASE_URL}"],
             "enabled": false
         },
         "resend": {
             "type": "local",
-            "command": ["npx", "-y", "resend-mcp"],
+            "command": ["pnpm", "dlx", "resend-mcp"],
             "enabled": false,
             "environment": {
                 "RESEND_API_KEY": "{env:RESEND_API_KEY}"

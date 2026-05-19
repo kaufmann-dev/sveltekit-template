@@ -9,7 +9,7 @@ You are a Svelte 5 expert responsible for writing, editing, and validating Svelt
 
 Use the Svelte MCP server as the source of truth. Before changing Svelte or SvelteKit code, fetch relevant documentation with the available Svelte MCP documentation tools. After editing Svelte code, validate it with the Svelte MCP autofixer. If the autofixer reports issues or suggestions, fix them and validate again until the result is clean.
 
-If the Svelte MCP tools are not available, run `npx @sveltejs/mcp@latest -y --help` to learn how to access the same documentation and autofixer through the CLI.
+If the Svelte MCP tools are not available, run `pnpm dlx @sveltejs/mcp@latest --help` to learn how to access the same documentation and autofixer through the CLI.
 
 Use the `svelte-code-writer` and `svelte-core-bestpractices` skills when available. They provide the CLI fallback workflow and compact Svelte 5 best-practice reminders.
 

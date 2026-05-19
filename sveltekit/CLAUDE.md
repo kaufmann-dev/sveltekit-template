@@ -60,7 +60,7 @@ After completing the code, ask the user if they want a playground link. Only cal
 
 ## How to Use shadcn-svelte
 
-> **shadcn-svelte is not a regular npm package.** There is no `npm install shadcn-svelte` for components, and you cannot import from `'shadcn-svelte'`. Components are added individually via CLI and copied directly into the project source code. If you try to import from the package name you will get an error.
+> **shadcn-svelte components are not imported from a package.** Do not import from `'shadcn-svelte'`. Components are added individually via CLI and copied directly into the project source code. If you try to import from the package name you will get an error.
 
 ### The Mental Model
 
@@ -71,9 +71,9 @@ shadcn-svelte is a CLI that writes component source files into `src/lib/componen
 Before using any shadcn-svelte component, it must first be added to the project. Always check whether `src/lib/components/ui/<component>/` already exists. If it does not:
 
 ```bash
-npx shadcn-svelte@latest add <component-name>
-# Example: npx shadcn-svelte@latest add button
-# Multiple at once: npx shadcn-svelte@latest add button card input label
+pnpm dlx shadcn-svelte@latest add <component-name>
+# Example: pnpm dlx shadcn-svelte@latest add button
+# Multiple at once: pnpm dlx shadcn-svelte@latest add button card input label
 ```
 
 ### Importing Components
