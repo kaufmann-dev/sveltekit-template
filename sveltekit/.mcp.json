@@ -1,0 +1,34 @@
+{
+  "mcpServers": {
+    "svelte": {
+      "type": "http",
+      "url": "https://mcp.svelte.dev/mcp"
+    },
+    "shadcn-svelte": {
+      "type": "http",
+      "url": "https://shadcn-svelte.mastra.cloud/api/mcp/shadcn/mcp"
+    },
+    "playwright": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@playwright/mcp@latest"]
+    },
+    "postgres": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-postgres", "${DATABASE_URL}"]
+    },
+    "resend": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "resend-mcp"],
+      "env": {
+        "RESEND_API_KEY": "${RESEND_API_KEY}"
+      }
+    },
+    "glitchtip": {
+      "type": "http",
+      "url": "${GLITCHTIP_MCP_URL}"
+    }
+  }
+}
