@@ -1,231 +1,216 @@
-## ⚠️ Important: Your Svelte Knowledge Is Outdated
+# Build & Test
 
-Svelte 5 introduced a fundamentally new paradigm — runes, snippets, fine-grained reactivity — that is a breaking departure from Svelte 4. Your training data almost certainly reflects Svelte 4 patterns (e.g. `$:`, `export let`, slots, stores) which are either deprecated or behave differently in Svelte 5. **Do not rely on your training data for any Svelte or SvelteKit code.** Always use the MCP tools below to retrieve current documentation before writing or reviewing any Svelte code.
+This file is for reusable SvelteKit template projects. When a real project has `package.json`, `pnpm-workspace.yaml`, `drizzle.config.*`, CI, or deployment files, always derive the final commands from those files first.
 
----
-
-## MCP Servers
-
-Use project-scoped MCP configuration when your agent tool supports it. Do not put secrets directly in MCP config files; reference environment variables instead.
-
-- `svelte` is enabled. Use it for current Svelte 5 and SvelteKit documentation and autofixing.
-- `shadcn-svelte` is enabled. Use it for shadcn-svelte component documentation, Bits UI documentation, and Lucide Svelte icon lookup.
-- `playwright` is optional. Use it only when browser automation or end-to-end test work is required.
-- `postgres` is optional and requires `DATABASE_URL`.
-- `resend` is optional and requires `RESEND_API_KEY`.
-- `glitchtip` is optional and requires `GLITCHTIP_MCP_URL`.
-
-Do not add optional MCP servers by default in tools that cannot safely keep MCP entries disabled. Prefer only the default `svelte` and `shadcn-svelte` servers unless the optional feature is actually needed.
-
-No MCP server is configured for Tailwind CSS, Iconify, mode-watcher, Better Auth, better-svelte-email, Superforms, Zod, Paraglide, Plausible, or Drizzle because no official or high-confidence project MCP server was identified for normal template use. Use the installed skills and the current package documentation instead.
-
-## Svelte Subagents
-
-Use the Svelte file-editor subagent for Svelte component or Svelte module work when your agent tool supports project subagents.
-
-Keep the Svelte skills in `.agents/skills`. The Svelte MCP server is the canonical source for documentation and autofixing; the Svelte skills provide on-demand workflow instructions and CLI fallback guidance.
-
----
-
-You are able to use the Svelte MCP server, where you have access to comprehensive Svelte 5 and SvelteKit documentation. Here's how to use the available tools effectively:
-
-## Available Svelte MCP Tools:
-
-### 1. list-sections
-
-Use this FIRST to discover all available documentation sections. Returns a structured list with titles, use_cases, and paths.
-
-When asked about Svelte or SvelteKit topics, ALWAYS use this tool at the start of the chat to find relevant sections.
-
-### 2. get-documentation
-
-Retrieves full documentation content for specific sections. Accepts single or multiple sections.
-
-After calling the list-sections tool, you MUST analyze the returned documentation sections (especially the use_cases field) and then use the get-documentation tool to fetch ALL documentation sections that are relevant for the user's task.
-
-### 3. svelte-autofixer
-
-Analyzes Svelte code and returns issues and suggestions.
-
-You MUST use this tool whenever writing Svelte code before sending it to the user. Keep calling it until no issues or suggestions are returned.
-
-### 4. playground-link
-
-Generates a Svelte Playground link with the provided code.
-
-After completing the code, ask the user if they want a playground link. Only call this tool after user confirmation and NEVER if code was written to files in their project.
-
-
----
-
-## How to Use shadcn-svelte
-
-> **shadcn-svelte components are not imported from a package.** Do not import from `'shadcn-svelte'`. Components are added individually via CLI and copied directly into the project source code. If you try to import from the package name you will get an error.
-
-### The Mental Model
-
-shadcn-svelte is a CLI that writes component source files into `src/lib/components/ui/` in the project. Once added, a component is just a `.svelte` file you own — it lives in the codebase, not in `node_modules`.
-
-### Adding a Component
-
-Before using any shadcn-svelte component, it must first be added to the project. Always check whether `src/lib/components/ui/<component>/` already exists. If it does not:
+Template default commands:
 
 ```bash
+pnpm install
+pnpm dev
+pnpm check
+pnpm build
+pnpm test
+pnpm exec vitest run
+pnpm exec playwright test
+pnpm drizzle-kit generate
+pnpm drizzle-kit migrate
 pnpm dlx shadcn-svelte@latest add <component-name>
-# Example: pnpm dlx shadcn-svelte@latest add button
-# Multiple at once: pnpm dlx shadcn-svelte@latest add button card input label
 ```
 
-### Importing Components
+Use `pnpm dev` for local development. Use `pnpm check` before finishing Svelte or TypeScript changes. Use `pnpm build` before finishing deployment, routing, server, adapter, or package changes.
 
-After adding, always import from the `$lib` alias — never from a package name:
+Use `pnpm test` when the project defines a test script. Use `pnpm exec vitest run` only when Vitest is configured and there is no project test script. Use `pnpm exec playwright test` only when Playwright is configured or end-to-end work is part of the task.
+
+For Drizzle schema changes, always generate and run migrations through Drizzle Kit. Keep schema files, generated migrations, and migration execution aligned with the project Drizzle config.
+
+For shadcn-svelte components, always check whether `src/lib/components/ui/<component>/` already exists before running the CLI. Add only the components required by the current task.
+
+# Tooling
+
+Use project-scoped MCP configuration when the agent tool supports it. Store secrets in environment variables, not directly in MCP config files.
+
+Always assume your Svelte knowledge may be stale. Svelte 5 uses runes, snippets, fine-grained reactivity, and newer event syntax; older Svelte patterns can compile incorrectly, behave differently, or push agents toward brittle code.
+
+Always use the Svelte MCP server before writing, reviewing, or refactoring Svelte or SvelteKit code:
+
+1. Call `list-sections` to identify relevant documentation.
+2. Fetch all relevant sections with `get-documentation`.
+3. After writing Svelte code, run `svelte-autofixer` until it reports no issues or suggestions.
+4. Generate a playground link only after the user asks for one, and only when the code was not written into the project.
+
+Use the `shadcn-svelte` MCP server for shadcn-svelte component docs, Bits UI docs, and Lucide Svelte icon lookup. Use local component source as the final source of truth once a component has been copied into the project.
+
+Use the Svelte file-editor subagent for Svelte component or Svelte module work when the agent tool supports project subagents. Keep Svelte skills in `.agents/skills`; use them as workflow guidance and use the Svelte MCP server as the canonical documentation and autofix source.
+
+Use `playwright` only for browser automation, visual verification, or end-to-end test work. For static inspection, prefer reading files and running local checks.
+
+Use optional MCP servers only when the feature is being implemented:
+
+- `postgres` requires `DATABASE_URL`.
+- `resend` requires `RESEND_API_KEY`.
+- `glitchtip` requires `GLITCHTIP_MCP_URL`.
+
+No official or high-confidence project MCP server is assumed for Tailwind CSS, Iconify, mode-watcher, Better Auth, better-svelte-email, Superforms, Zod, Paraglide, Plausible, Vitest, Playwright, or Drizzle. Use installed skills, package docs, and current library documentation for those tools.
+
+Use local `rg` for searching a cloned repo. Use remote grep only for cross-repo examples or when local code is not available.
+
+# Conventions
+
+Always treat this as a Svelte 5 project. Current Svelte documentation is the source of truth, not older training data.
+
+Core infrastructure:
+
+- Use SvelteKit with `@sveltejs/adapter-node` for the application framework and Node deployment target.
+- Use Tailwind CSS and shadcn-svelte for UI.
+- Use `@lucide/svelte` for icons.
+- Use `mode-watcher` for light, dark, and system theme mode.
+- Use Drizzle with PostgreSQL for persistence.
+- Use Better Auth for authentication and session management.
+
+Optional infrastructure:
+
+- Use Superforms and Zod for user-facing forms.
+- Use Resend and better-svelte-email for email.
+- Use Paraglide for internationalization.
+- Use Vitest for unit and component tests.
+- Use Playwright for end-to-end tests.
+- Use Plausible for analytics.
+- Use GlitchTip for error monitoring.
+
+Always write new Svelte code in runes mode:
+
+- Use `$props()` for component inputs and forwarded props.
+- Use `$state` only for values that must update the template, a derived value, or an effect.
+- Use `$state.raw` for large objects, API responses, or arrays that are reassigned as whole values and do not need deep mutation tracking.
+- Use `$derived` for computed state.
+- Use `$derived.by` only when the computation cannot be expressed clearly as a single expression.
+- Use `$effect` only as an escape hatch for external synchronization or unavoidable reactive observation.
+- Use event handlers, component callbacks, function bindings, or direct assignment for user-driven changes.
+- Use snippets and `{@render ...}` for reusable markup and component children.
+- Use `onclick={...}` and other `on...` attributes for event listeners.
+- Use keyed `{#each}` blocks with stable object identifiers.
+- Use CSS custom properties for parent-to-child styling boundaries.
+- Use `createContext` for typed context instead of unscoped shared module state when state must be per request or per tree.
+
+Always treat props as changeable. Values derived from props should normally be `$derived`.
+
+Use `$effect` with extra suspicion. It tracks every state read inside its closure. Reading and writing the same state in one tracked effect can trigger `ERR_SVELTE_TOO_MANY_UPDATES`.
 
 ```svelte
-<!-- ✅ Correct -->
-import { Button } from '$lib/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
-import { Input } from '$lib/components/ui/input';
+<script lang="ts">
+  let count = $state(0);
 
-<!-- ❌ Wrong — this package path does not exist -->
-import { Button } from 'shadcn-svelte';
+  $effect(() => {
+    count = count + 1;
+  });
+</script>
 ```
 
-Many components export multiple named sub-components (e.g. `Card` exports `Card`, `CardHeader`, `CardContent`, `CardFooter`, `CardTitle`, `CardDescription`). Import all the parts you need from the same path.
-
-### Styling
-
-Customise components by passing Tailwind classes via the `class` prop. Use the `cn()` utility from `$lib/utils` to merge classes:
+Prefer direct initialization or a derived value:
 
 ```svelte
-import { cn } from '$lib/utils';
-
-<Button class={cn('w-full mt-4', someCondition && 'opacity-50')}>Submit</Button>
+<script lang="ts">
+  let count = $state(1);
+  let doubled = $derived(count * 2);
+</script>
 ```
 
-### Forms
-
-The `form` component from shadcn-svelte is built on top of **formsnap** and integrates directly with **superforms**. When building forms, always combine: `superforms` (form state) + `zod` (schema) + shadcn-svelte `form` components (UI). Do not build form UI from raw HTML inputs.
-
-### Never Recreate What Exists
-
-If a shadcn-svelte component covers your use case, you **must** use it. Do not write a custom button, input, dialog, dropdown, etc. from scratch. Check the available component list below first.
-
-### Available Components
-
-Add any of these by name with the CLI:
-
-`accordion` `alert` `alert-dialog` `aspect-ratio` `avatar` `badge` `breadcrumb` `button` `calendar` `card` `carousel` `chart` `checkbox` `collapsible` `combobox` `command` `context-menu` `data-table` `date-picker` `dialog` `drawer` `dropdown-menu` `form` `hover-card` `input` `input-otp` `label` `menubar` `navigation-menu` `pagination` `popover` `progress` `radio-group` `range-calendar` `resizable` `scroll-area` `select` `separator` `sheet` `sidebar` `skeleton` `slider` `sonner` `switch` `table` `tabs` `textarea` `toggle` `toggle-group` `tooltip`
-
----
-
-## How to Use @iconify/tailwind4
-
-> **Do not use `@iconify/svelte`.** Do not import `<Icon icon="..." />`. This project uses the Tailwind CSS plugin, so icons are CSS classes on plain elements.
-
-Use an inline element with an Iconify dynamic class:
+When an effect must write state, track the external source and keep reads of the written target out of the dependency set:
 
 ```svelte
-<span class="icon-[lucide--search] size-4" aria-hidden="true"></span>
-<span class="icon-[mdi-light--home] size-5" aria-hidden="true"></span>
+<script lang="ts">
+  import { untrack } from "svelte";
+
+  let source = $state(0);
+  let target = $state(0);
+
+  $effect(() => {
+    const next = source + 1;
+    untrack(() => {
+      target = next;
+    });
+  });
+</script>
 ```
 
-The class format is `icon-[collection--icon-name]`. The separator between collection and icon name is **two hyphens**. Size and color come from normal Tailwind classes (`size-4`, `text-muted-foreground`, etc.).
+Always use `$derived` instead of `$effect` for computed state:
 
-If the plugin is not configured yet, add it to the Tailwind CSS entry file:
-
-```css
-@plugin "@iconify/tailwind4";
+```svelte
+<script lang="ts">
+  let count = $state(0);
+  let doubled = $derived(count * 2);
+</script>
 ```
 
----
+Always react to user actions at the event boundary instead of watching the state change afterward:
 
-## How to Use better-auth
-
-> **Do not use Auth.js, Lucia, custom session tables, or hand-rolled auth helpers.** This project standardises on `better-auth` for authentication and session management.
-
-Server auth should be created with `betterAuth`:
-
-```ts
-import { betterAuth } from "better-auth";
-
-export const auth = betterAuth({
-  // project config here
-});
+```svelte
+<Select
+  bind:value={currentPage}
+  onValueChange={(value) => navUpdate({ page: value })}
+/>
 ```
 
-In SvelteKit, mount Better Auth through `hooks.server.ts` with `svelteKitHandler`:
+Use function bindings for type conversion or normalization at the binding boundary:
 
-```ts
-import { building } from "$app/environment";
-import { auth } from "$lib/server/auth";
-import { svelteKitHandler } from "better-auth/svelte-kit";
-
-export async function handle({ event, resolve }) {
-  return svelteKitHandler({ event, resolve, auth, building });
-}
+```svelte
+<Select
+  bind:value={
+    () => query.rowsPerPage.toString(),
+    (value) => {
+      query.rowsPerPage = Number.parseInt(value, 10);
+    }
+  }
+/>
 ```
 
-For client-side auth actions, create the Svelte client from `better-auth/svelte`:
+Always write effects as browser-only by nature; effects do not run during server rendering. Put browser setup directly in the effect and return cleanup. For global event listeners, use `<svelte:window>` or `<svelte:document>` rather than `onMount` or an effect.
 
-```ts
-import { createAuthClient } from "better-auth/svelte";
+Use `createSubscriber` from `svelte/reactivity` when Svelte needs to observe an external source. Use `$inspect` and `$inspect.trace(label)` for reactivity debugging; put `$inspect.trace` first inside the effect, derived value, or function being traced.
 
-export const authClient = createAuthClient();
-```
+If an effect genuinely needs explicit dependency control and the project already uses `runed`, consider `watch` from `runed`. Do not add `runed` only to avoid a small refactor.
 
-When using auth from server actions, include the SvelteKit cookies plugin as the last Better Auth plugin:
+Use Svelte async features only when the installed Svelte version and `svelte.config.js` enable them. Await expressions and hydratable behavior require current documentation checks and the relevant experimental config when they are not stable for the project.
 
-```ts
-import { getRequestEvent } from "$app/server";
-import { sveltekitCookies } from "better-auth/svelte-kit";
+Always prefer modern Svelte replacements:
 
-plugins: [sveltekitCookies(getRequestEvent)]
-```
+- Use snippets and `{@render ...}` for children and reusable markup.
+- Use `<DynamicComponent>` for dynamic component rendering.
+- Use `import Self from "./ThisComponent.svelte"` and `<Self>` for recursive rendering.
+- Use classes with `$state` fields for shared reactive logic when that fits better than stores.
+- Use `{@attach ...}` for new attachment code when current Svelte docs support it.
+- Use clsx-style arrays and objects in `class` attributes for conditional classes.
 
-Always check the current Better Auth documentation before writing authentication logic, including providers, plugins, database adapters, or session handling. Its API is not interchangeable with older SvelteKit auth libraries.
+Always use shadcn-svelte for common UI primitives. Components are source files copied into `src/lib/components/ui/`; they are not imported from a package named `shadcn-svelte`.
 
----
-
-## How to Use better-svelte-email
-
-> **Do not write raw HTML email strings and do not use `react-email`.** Email templates must be Svelte components rendered with `better-svelte-email`.
-
-Create email templates as `.svelte` components, then render them on the server:
-
-```ts
-import Renderer, { toPlainText } from "better-svelte-email/render";
-import WelcomeEmail from "$lib/emails/welcome-email.svelte";
-
-const renderer = new Renderer();
-const html = await renderer.render(WelcomeEmail, {
-  props: { name: user.name }
-});
-const text = toPlainText(html);
-```
-
-Send the rendered `html` and `text` through Resend. Keep email rendering in server-only code.
-
----
-
-## How to Use superforms
-
-Use `superforms` for every user-facing form, with `zod` schemas for validation. For SvelteKit server code, validate with the Superforms adapter for Zod. For Svelte components, initialize form state with `superForm` and Svelte 5 runes-compatible patterns from the current docs.
-
-When using shadcn-svelte forms, the chain is:
+Available shadcn-svelte components include:
 
 ```text
-zod schema → superforms → formsnap → shadcn-svelte form components
+accordion alert alert-dialog aspect-ratio avatar badge breadcrumb button calendar card carousel chart checkbox collapsible combobox command context-menu data-table date-picker dialog drawer dropdown-menu form hover-card input input-otp label menubar navigation-menu pagination popover progress radio-group range-calendar resizable scroll-area select separator sheet sidebar skeleton slider sonner switch table tabs textarea toggle toggle-group tooltip
 ```
 
-Do not build old Svelte 4-style forms by destructuring `$form` and `$errors` into raw HTML inputs. In shadcn-svelte UI, pass the Superforms object into shadcn `Form.Field`, use `Form.Control`, render the provided snippet props, and display errors with the shadcn form error components.
+Import shadcn-svelte components from `$lib/components/ui/<component>`:
 
-Use the current shadcn-svelte form docs as the source of truth for component structure before writing form markup.
+```svelte
+<script lang="ts">
+  import { Button } from "$lib/components/ui/button";
+  import { Card, CardContent, CardHeader, CardTitle } from "$lib/components/ui/card";
+</script>
+```
 
----
+Customize shadcn-svelte components with Tailwind classes through `class`, using the local `cn()` helper when conditional class merging is needed.
 
-## How to Use mode-watcher
+Always use `@lucide/svelte` for icons:
 
-Use `mode-watcher` for light/dark mode. Add `ModeWatcher` once in the root layout:
+```svelte
+<script lang="ts">
+  import { Search } from "@lucide/svelte";
+</script>
+
+<Search class="size-4" />
+```
+
+Always use `mode-watcher` for light, dark, and system theme behavior. Add `ModeWatcher` once in the root layout:
 
 ```svelte
 <script lang="ts">
@@ -238,47 +223,120 @@ Use `mode-watcher` for light/dark mode. Add `ModeWatcher` once in the root layou
 {@render children()}
 ```
 
-Use `setMode("light" | "dark" | "system")` or `toggleMode` from `mode-watcher` for controls. Do not write custom localStorage theme code.
+Use `setMode("light" | "dark" | "system")` or `toggleMode` from `mode-watcher` for controls.
 
----
+Always use Better Auth for authentication and session management. Check current Better Auth documentation before implementing providers, plugins, adapters, session handling, or account flows.
 
-## Drizzle Workflow
+Starting server pattern:
 
-Use Drizzle for database access and migrations. After schema changes, generate and run migrations with Drizzle Kit (`drizzle-kit generate`, then `drizzle-kit migrate`) instead of hand-writing migration state.
+```ts
+import { betterAuth } from "better-auth";
 
-## Development Database
+export const auth = betterAuth({
+  // project config
+});
+```
 
-During development, use the manually managed Docker PostgreSQL database named `postgres-sveltekit`.
+SvelteKit hook pattern:
 
-Do not turn the local Docker command into production deployment guidance. Production deployment and database provisioning are handled separately through Coolify.
+```ts
+import { building } from "$app/environment";
+import { auth } from "$lib/server/auth";
+import { svelteKitHandler } from "better-auth/svelte-kit";
 
----
+export async function handle({ event, resolve }) {
+  return svelteKitHandler({ event, resolve, auth, building });
+}
+```
 
-## Technology Stack
+Client pattern:
 
-### Always Use
+```ts
+import { createAuthClient } from "better-auth/svelte";
 
-These packages are part of the core infrastructure and must always be used. Never substitute them with alternatives.
+export const authClient = createAuthClient();
+```
 
-| Area      | Package(s)                            | Notes                                                                |
-| --------- | ------------------------------------- | -------------------------------------------------------------------- |
-| Framework | `sveltekit`, `@sveltejs/adapter-node` | All projects use SvelteKit with the Node adapter                     |
-| Styling   | `tailwindcss`, `shadcn-svelte`        | Use shadcn-svelte components and Tailwind utility classes for all UI |
-| Icons     | `@iconify/tailwind4`                  | Use Iconify for all icons via the Tailwind plugin                    |
-| Theme     | `mode-watcher`                        | Use for light/dark mode management                                   |
-| Database  | `postgresql`, `drizzle`               | Drizzle ORM with PostgreSQL for all data persistence                 |
-| Auth      | `better-auth`                         | Use for all authentication and session management                    |
+Server action cookie pattern:
 
-### Use Only When Needed
+```ts
+import { getRequestEvent } from "$app/server";
+import { sveltekitCookies } from "better-auth/svelte-kit";
 
-These packages are not required in every project. **Do not add them unless the feature they support is actually being implemented.** However, if you do implement that feature, you **must** use the specified package — do not use alternatives.
+plugins: [sveltekitCookies(getRequestEvent)];
+```
 
-| Feature                  | Package(s)                      | When to use                                                                                                                 |
-| ------------------------ | ------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| Forms & Validation       | `superforms`, `zod`             | Any time you build a user-facing form. Use Superforms for form handling and Zod for schema validation.                      |
-| Email                    | `resend`, `better-svelte-email` | Any time the app sends emails. Use Resend as the email provider and better-svelte-email to build email templates in Svelte. |
-| Internationalisation     | `paraglide`                     | Only if the app needs to support multiple languages.                                                                        |
-| Unit / Component Testing | `vitest`                        | Only if unit or component tests are required.                                                                               |
-| End-to-End Testing       | `playwright`                    | Only if end-to-end tests are required.                                                                                      |
-| Analytics                | `plausible`                     | Only if user analytics are required.                                                                                        |
-| Error Monitoring         | `glitchtip`                     | Only if error tracking and observability are required.                                                                      |
+Always use Superforms with Zod for user-facing forms. With shadcn-svelte form UI, follow the chain:
+
+```text
+zod schema -> superforms -> formsnap -> shadcn-svelte form components
+```
+
+Always use the current shadcn-svelte form docs before writing form markup. Use `Form.Field`, `Form.Control`, snippet props, and the shadcn form error components rather than raw ad hoc form markup.
+
+Always use better-svelte-email for email templates and Resend for delivery when email is implemented. Write templates as Svelte components, render them in server-only code, and send both HTML and plain text.
+
+Starting email rendering pattern:
+
+```ts
+import Renderer, { toPlainText } from "better-svelte-email/render";
+import WelcomeEmail from "$lib/emails/welcome-email.svelte";
+
+const renderer = new Renderer();
+const html = await renderer.render(WelcomeEmail, {
+  props: { name: user.name }
+});
+const text = toPlainText(html);
+```
+
+During local development, use the manually managed Docker PostgreSQL database named `postgres-sveltekit` when the project follows this template convention. Treat production database provisioning as separate deployment infrastructure.
+
+Always keep deployment fixes scoped to the exact failing layer. When debugging Coolify or Nixpacks failures, identify the failing command first, then fix that command or config.
+
+For Coolify and Nixpacks:
+
+- If `pnpm-workspace.yaml` exists in a single-package app, keep a non-empty `packages` list with `.` included.
+- Use `engines.node` and `nixpacks.toml` to pin compatible Node behavior when dependencies require a minimum patch version.
+- Read deployment environment variables from `process.env`.
+- Load `.env` only after checking that the file exists.
+- Validate seed script environment variables before calling Better Auth APIs.
+- Document and enforce minimum seeded account password lengths.
+- Let Nixpacks handle the install phase unless a project-specific reason requires otherwise.
+- Prefer explicit deploy or runtime migration and seed steps when Coolify supports them.
+- Keep build-time migration and seed scripts idempotent when they must run during image builds.
+
+# Hard Limits
+
+Always use `pnpm` for package management in new projects.
+
+Always use current Svelte 5 runes patterns for new Svelte code.
+
+Always fetch current Svelte MCP documentation before writing or reviewing Svelte or SvelteKit code.
+
+Always run the Svelte autofixer on Svelte code you write before presenting it as complete.
+
+Always use `$derived`, event handlers, function bindings, or direct assignment before reaching for `$effect`.
+
+Always keep `$effect` free of tracked read-write cycles.
+
+Always import shadcn-svelte components from local `$lib/components/ui/...` paths after they have been added to the project.
+
+Always use `@lucide/svelte` for icons.
+
+Always use Better Auth for auth.
+
+Always use Superforms and Zod for user-facing forms.
+
+Always use Drizzle and PostgreSQL for persistence.
+
+Always use better-svelte-email and Resend for email features.
+
+Always use mode-watcher for theme mode.
+
+Always keep optional infrastructure out of the project until its feature is being implemented.
+
+Always keep secrets in environment variables.
+
+Always preserve unrelated worktree state.
+
+Always update existing root documentation after a change when the change affects documented setup, usage, design, tooling, conventions, or constraints.
