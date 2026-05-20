@@ -4,6 +4,8 @@ These are lightweight configuration templates for OpenCode and Codex. They only 
 
 To drop these settings directly into your project, just run the corresponding `degit` command.
 
+All project templates use AGENTS.md as the default instruction file. If you are using Claude Code, rename it to CLAUDE.md, if you have not configured support for other instruction files.
+
 ## Stable
 
 ```bash
