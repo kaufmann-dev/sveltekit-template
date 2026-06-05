@@ -10,21 +10,21 @@ All project templates use AGENTS.md as the default instruction file. If you are 
 
 ```bash
 # SvelteKit
-pnpm dlx degit kaufmann-dev/project-templates/sveltekit .
+pnpm dlx degit kaufmann-dev/project-templates/sveltekit . --force --mode=tar
 ```
 
 ## Under Development
 
 ```bash
 # Astro
-pnpm dlx degit kaufmann-dev/project-templates/astro .
+pnpm dlx degit kaufmann-dev/project-templates/astro . --force --mode=tar
 
 # Hono API
-pnpm dlx degit kaufmann-dev/project-templates/hono-api .
+pnpm dlx degit kaufmann-dev/project-templates/hono-api . --force --mode=tar
 
 # Hono API Finance
-pnpm dlx degit kaufmann-dev/project-templates/hono-api-finance .
+pnpm dlx degit kaufmann-dev/project-templates/hono-api-finance . --force --mode=tar
 
 # Next.js
-pnpm dlx degit kaufmann-dev/project-templates/nextjs .
+pnpm dlx degit kaufmann-dev/project-templates/nextjs . --force --mode=tar
 ```
