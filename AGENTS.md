@@ -19,8 +19,12 @@ pnpm drizzle-kit migrate     # Execute migrations
 
 ## Tooling
 
-- **Svelte MCP**: Use before writing/refactoring Svelte. Call `list-sections`, fetch docs, and run `svelte-autofixer` after writing.
-- **shadcn-svelte MCP**: Use for shadcn-svelte component docs, Bits UI docs, and Lucide Svelte icon lookup.
+- **Svelte MCP**: Use before writing, reviewing, or refactoring Svelte or SvelteKit code.
+  - Call `list-sections` to identify relevant documentation.
+  - Fetch all relevant sections with `get-documentation`.
+  - After writing Svelte code, run `svelte-autofixer` until it reports no issues or suggestions.
+  - Generate a playground link only after the user asks for one, and only when the code was not written into the project.
+- **shadcn-svelte MCP**: Use for shadcn-svelte component docs, Bits UI docs, and Lucide Svelte icon lookup. Prefer existing local component code when implementation details differ from docs.
 - **Svelte file-editor**: Use this subagent for Svelte component/module work if available.
 
 ## Technology Stack
@@ -36,7 +40,7 @@ pnpm drizzle-kit migrate     # Execute migrations
 - **i18n**: Paraglide
 - **Testing**: Vitest
 
-Keep optional infrastructure out of the project until its feature is being implemented.
+Do not use frameworks or libraries just because they are installed. Keep optional infrastructure out of the project until its feature is being implemented.
 
 ## Svelte Implementation Patterns
 
@@ -147,14 +151,26 @@ Use modern Svelte replacements over legacy features:
 
 ## UI and Styling
 
-- **shadcn-svelte**: All components are already pre-installed in `src/lib/components/ui/`. **Never run the CLI to install components, and never delete unused shadcn components during codebase cleanup.** Import components from local `$lib/components/ui/<component>` paths, never from the package name. Customize with Tailwind classes using `class` and the local `cn()` helper.
+- **shadcn-svelte**: All components are already pre-installed in `src/lib/components/ui/`. **Never run the CLI to install components, and never delete unused shadcn components during codebase cleanup.**
+  - Never import components from a package named `shadcn-svelte`.
+  - Import them only from local `$lib/components/ui/...` paths.
+  - Use local component source as the final source of truth once a component has been copied into the project.
+  - Customize with Tailwind classes using `class` and the local `cn()` helper.
 - Available shadcn-svelte components: `accordion alert alert-dialog aspect-ratio avatar badge breadcrumb button calendar card carousel chart checkbox collapsible combobox command context-menu data-table date-picker dialog drawer dropdown-menu form hover-card input input-otp label menubar navigation-menu pagination popover progress radio-group range-calendar resizable scroll-area select separator sheet sidebar skeleton slider sonner switch table tabs textarea toggle toggle-group tooltip`
 - **Icons**: Always use `@lucide/svelte` (e.g., `<Search class="size-4" />`).
-- **Theming**: Use `setMode("light" | "dark" | "system")` or `toggleMode` from `mode-watcher` for controls.
+- **Theming**: Use `setMode("light" | "dark" | "system")` or `toggleMode` from `mode-watcher` for controls. Add `ModeWatcher` once in the root layout:
+  ```svelte
+  <script lang="ts">
+    import { ModeWatcher } from "mode-watcher";
+    let { children } = $props();
+  </script>
+  <ModeWatcher />
+  {@render children()}
+  ```
 
 ## Backend and Services
 
-- **Authentication**: Check current Better Auth documentation before implementing flows.
+- **Authentication**: Check current Better Auth documentation before implementing providers, plugins, adapters, session handling, or account flows.
   - *Server*: `export const auth = betterAuth({ ... });`
   - *Hook*: `return svelteKitHandler({ event, resolve, auth, building });`
   - *Client*: `export const authClient = createAuthClient();`
