@@ -36,12 +36,19 @@ pnpm dlx degit kaufmann-dev/project-templates/sveltekit . --mode=tar --force
 
 ### 2. Create the configured SvelteKit app
 ```bash
-pnpm dlx sv create --template minimal --types ts --add tailwindcss="plugins:none" drizzle="database:postgresql+client:postgres.js+docker:no" better-auth="demo:password" eslint prettier vitest="usages:unit,component" paraglide="languageTags:en,de+demo:no" sveltekit-adapter="adapter:node" --install pnpm . --no-dir-check
+pnpm dlx sv create --template minimal --types ts \
+  --add tailwindcss="plugins:none" \
+  drizzle="database:postgresql+client:postgres.js+docker:no" \
+  eslint prettier \
+  vitest="usages:unit,component" \
+  paraglide="languageTags:en,de+demo:no" \
+  sveltekit-adapter="adapter:node" \
+  --install pnpm . --no-dir-check
 ```
 
 ### 3. Add the required non-`sv` packages
 ```bash
-pnpm add mode-watcher @lucide/svelte sveltekit-superforms zod resend better-svelte-email
+pnpm add mode-watcher @lucide/svelte sveltekit-superforms zod resend better-svelte-email better-auth
 
 pnpm dlx shadcn-svelte@latest init --css src/routes/layout.css --lib-alias '$lib' --components-alias '$lib/components' --ui-alias '$lib/components/ui' --utils-alias '$lib/utils' --hooks-alias '$lib/hooks'
 ```
