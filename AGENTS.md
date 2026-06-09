@@ -61,119 +61,110 @@ Do not use frameworks or libraries just because they are installed. Always keep 
 
 ## Svelte 5
 
-Always treat this as a Svelte 5 project. Current Svelte documentation is the source of truth, not older training data. Assume your Svelte knowledge may be stale because Svelte 5 uses runes, snippets, fine-grained reactivity, and newer event syntax.
+Always treat this as a Svelte 5 project. Use runes, snippets, and fine-grained reactivity.
 
-### Runes
+### Core State and Props
 
-Always write new Svelte code in runes mode:
-
-- Use `$props()` for component inputs and forwarded props.
+- Use `$props()` for component inputs. Always treat props as changeable.
 - Use `$state` only for values that must update the template, a derived value, or an effect.
-- Use `$state.raw` for large objects, API responses, or arrays that are reassigned as whole values and do not need deep mutation tracking.
-- Use `$derived` for computed state.
-- Use `$derived.by` only when the computation cannot be expressed clearly as a single expression.
-- Use `$effect` only as an escape hatch for external synchronization or unavoidable reactive observation.
-- Use event handlers, component callbacks, function bindings, or direct assignment for user-driven changes.
-- Use snippets and `{@render ...}` for reusable markup and component children.
-- Use `onclick={...}` and other `on...` attributes for event listeners.
-- Use keyed `{#each}` blocks with stable object identifiers.
-- Use CSS custom properties for parent-to-child styling boundaries.
-- Use `createContext` for typed context instead of unscoped shared module state when state must be per request or per tree.
+- Use `$state.raw` for large objects, API responses, or arrays that are reassigned entirely without deep mutation tracking.
+- Use `$derived` for computed state, including values derived from props.
+- Use `$derived.by` only when computation requires a multi-line function.
 
-Always treat props as changeable. Values derived from props should normally be `$derived`.
+### Reactivity and Effects ($effect)
 
-Prefer modern Svelte replacements:
+Never use `$effect` unless absolutely necessary (e.g., syncing with external non-Svelte libraries). Using `$effect` is almost always a sign the code should be refactored.
 
-- Use snippets and `{@render ...}` for children and reusable markup.
-- Use `<DynamicComponent>` for dynamic component rendering.
-- Use `import Self from "./ThisComponent.svelte"` and `<Self>` for recursive rendering.
-- Use classes with `$state` fields for shared reactive logic when that fits better than stores.
-- Use `{@attach ...}` for new attachment code when current Svelte docs support it.
-- Use clsx-style arrays and objects in `class` attributes for conditional classes.
-
-Use Svelte async features only when the installed Svelte version and `svelte.config.js` enable them. Await expressions and hydratable behavior require current documentation checks and the relevant experimental config when they are not stable for the project.
-
-### Reactivity and Effects
-
-Always use `$derived`, event handlers, function bindings, or direct assignment before reaching for `$effect`.
-
-Use `$effect` with extra suspicion. It tracks every state read inside its closure. Reading and writing the same state in one tracked effect can trigger `ERR_SVELTE_TOO_MANY_UPDATES`.
-
-Do not do this:
-
+**❌ Wrong: `$effect` for computed state**
 ```svelte
-<script lang="ts">
-  let count = $state(0);
-
-  $effect(() => {
-    count = count + 1;
-  });
-</script>
+let rowsPerPageValue = $state(String(data.query.rows));
+$effect(() => {
+  rowsPerPageValue = String(data.query.rows);
+});
 ```
 
-Prefer direct initialization or a derived value:
-
+**✅ Right: Use `$derived`**
 ```svelte
-<script lang="ts">
-  let count = $state(1);
-  let doubled = $derived(count * 2);
-</script>
+let rowsPerPageValue = $derived(String(data.query.rows));
 ```
 
-When an effect must write state, track the external source and keep reads of the written target out of the dependency set:
-
+**❌ Wrong: `$effect` to react to state changes**
 ```svelte
-<script lang="ts">
-  import { untrack } from "svelte";
-
-  let source = $state(0);
-  let target = $state(0);
-
-  $effect(() => {
-    const next = source + 1;
-    untrack(() => {
-      target = next;
-    });
-  });
-</script>
+let currentPage = $state(data.query.page);
+$effect(() => {
+  navUpdate({ page: currentPage });
+});
+<Select bind:value={currentPage} />
 ```
 
-Always use `$derived` instead of `$effect` for computed state:
-
+**✅ Right: React to events at the boundary**
 ```svelte
-<script lang="ts">
-  let count = $state(0);
-  let doubled = $derived(count * 2);
-</script>
-```
-
-Always react to user actions at the event boundary instead of watching the state change afterward:
-
-```svelte
+let currentPage = $state(data.query.page);
 <Select
   bind:value={currentPage}
   onValueChange={(value) => navUpdate({ page: value })}
 />
 ```
 
-Use function bindings for type conversion or normalization at the binding boundary:
-
+**❌ Wrong: `$effect` for type conversion with `bind:`**
 ```svelte
+let query = $state({ rowsPerPage: 10 });
+let rowsPerPageValue = $state(String(query.rowsPerPage));
+$effect(() => {
+  const n = Number.parseInt(rowsPerPageValue, 10);
+  if (!Number.isFinite(n) || n === query.rowsPerPage) return;
+  query.rowsPerPage = n;
+});
+<Select bind:value={rowsPerPageValue} />
+```
+
+**✅ Right: Use getter/setter bindings**
+```svelte
+let query = $state({ rowsPerPage: 10 });
 <Select
   bind:value={
     () => query.rowsPerPage.toString(),
-    (value) => {
-      query.rowsPerPage = Number.parseInt(value, 10);
-    }
+    (value) => { query.rowsPerPage = Number.parseInt(value, 10); }
   }
 />
 ```
 
-Always write effects as browser-only by nature; effects do not run during server rendering. Put browser setup directly in the effect and return cleanup. For global event listeners, use `<svelte:window>` or `<svelte:document>` rather than `onMount` or an effect.
+**Valid `$effect` Escape Hatch:**
+When an effect must write state, track the external source and keep reads of the written target out of the dependency set using `untrack`:
 
-Use `createSubscriber` from `svelte/reactivity` when Svelte needs to observe an external source. Use `$inspect` and `$inspect.trace(label)` for reactivity debugging; put `$inspect.trace` first inside the effect, derived value, or function being traced.
+```svelte
+import { untrack } from "svelte";
 
-If an effect genuinely needs explicit dependency control and the project already uses `runed`, consider `watch` from `runed`. Do not add `runed` only to avoid a small refactor.
+let source = $state(0);
+let target = $state(0);
+
+$effect(() => {
+  const next = source + 1;
+  untrack(() => { target = next; });
+});
+```
+
+Always write effects as browser-only by nature. For global event listeners, use `<svelte:window>` or `<svelte:document>` rather than `onMount` or an effect.
+
+Use `createSubscriber` from `svelte/reactivity` to observe external sources. Use `$inspect.trace(label)` as the first line of a reactive block to debug update triggers.
+
+If an effect genuinely needs explicit dependency control and the project uses `runed`, consider `watch`. Do not add `runed` only to avoid a small refactor.
+
+### Component Architecture & Styling
+
+Use modern Svelte replacements over legacy features:
+
+- Use snippets and `{@render ...}` for reusable markup and component children.
+- Use `<DynamicComponent>` for dynamic component rendering.
+- Use `import Self from "./ThisComponent.svelte"` and `<Self>` for recursive rendering.
+- Use classes with `$state` fields for shared reactive logic when it fits better than stores.
+- Use `{@attach ...}` for new attachment code.
+- Use `clsx`-style arrays and objects in `class` attributes for conditional classes.
+- Use `onclick={...}` and other `on...` attributes for event listeners.
+- Use keyed `{#each}` blocks with stable object identifiers. Never use the index as a key. Avoid destructuring if mutating the item.
+- Use CSS custom properties for parent-to-child styling boundaries.
+- Use `createContext` for typed context instead of unscoped shared module state when state must be per request or per tree.
+- Enable `experimental.async` in `svelte.config.js` to use `await` expressions and `hydratable` (requires Svelte >= 5.36).
 
 ## UI, Styling, and Icons
 
