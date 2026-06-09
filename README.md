@@ -31,7 +31,7 @@ Recommended for bigger projects, but not included by default:
 ```bash
 mkdir my-app && cd my-app
 
-pnpm dlx degit kaufmann-dev/project-templates/sveltekit . --mode=tar --force
+pnpm dlx degit kaufmann-dev/sveltekit-template . --mode=tar --force
 ```
 
 ### 2. Create the configured SvelteKit app
