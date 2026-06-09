@@ -46,6 +46,10 @@ pnpm dlx sv create --template minimal --types ts \
   --install pnpm . --no-dir-check
 ```
 
+> [!WARNING]
+> This command will overwrite this README.md. Back it up before running it.
+> It will also add a 'Project Configuration' section at the very top of AGENTS.md. Delete that section after running it.
+
 ### 3. Add the required non-`sv` packages
 ```bash
 pnpm add mode-watcher @lucide/svelte sveltekit-superforms zod resend better-svelte-email better-auth
