@@ -35,6 +35,10 @@ pnpm dlx degit kaufmann-dev/project-templates/sveltekit . --mode=tar --force
 ```
 
 ### 2. Create the configured SvelteKit app
+> [!WARNING]
+> This command will overwrite this README.md. Back it up before running it.
+> It will also add a 'Project Configuration' section at the very top of AGENTS.md. Delete that section after running it.
+
 ```bash
 pnpm dlx sv create --template minimal --types ts \
   --add tailwindcss="plugins:none" \
@@ -45,10 +49,6 @@ pnpm dlx sv create --template minimal --types ts \
   sveltekit-adapter="adapter:node" \
   --install pnpm . --no-dir-check
 ```
-
-> [!WARNING]
-> This command will overwrite this README.md. Back it up before running it.
-> It will also add a 'Project Configuration' section at the very top of AGENTS.md. Delete that section after running it.
 
 ### 3. Add the required non-`sv` packages
 ```bash
