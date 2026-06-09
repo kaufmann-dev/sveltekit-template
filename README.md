@@ -1,39 +1,57 @@
-# SvelteKit Agent Template
-> Project-scoped agent configuration for SvelteKit projects.
+# SvelteKit Template
+> A strongly opinionated SvelteKit starter template for AI-driven development
+
+| Category                  | Tools                                                     |
+| ------------------------- | --------------------------------------------------------- |
+| Framework                 | SvelteKit, @sveltejs/adapter-node                         |
+| UI & Styling              | Tailwind CSS, shadcn-svelte, @lucide/svelte, mode-watcher |
+| Data & Auth               | PostgreSQL, Drizzle ORM, Better Auth                      |
+| Forms & Validation        | Superforms, Zod                                           |
+| Email                     | Resend, better-svelte-email                               |
+| Internationalisation      | Paraglide                                                 |
+| Testing & Quality         | Vitest, svelte-check, ESLint, Prettier                    |
+| Local Development         | Vite, pnpm, Podman                                        |
+
+Recommended for bigger projects, but not included by default:
+- `Plausible` for Observability
+- `GlitchTip` for Error Tracking
+- `Playwright` for E2E testing
 
 ## Contents
-- [Create The App](#create-the-app)
+- [Get Started](#get-started)
 - [Development Commands](#development-commands)
 - [Development Database](#development-database)
 - [Included](#included)
 - [MCP Servers](#mcp-servers)
-- [Optional Add-Ons](#optional-add-ons)
+- [Assumptions](#assumptions)
 
-## Create The App
+## Get Started
 
-Start with a minimal TypeScript SvelteKit app, install with pnpm, and add the required official `sv` add-ons:
-
+### 1. Copy this template into the project folder
 ```bash
-mkdir my-app
-cd my-app
-pnpm dlx sv create --template minimal --types ts --add tailwindcss="plugins:none" drizzle="database:postgresql+client:postgres.js+docker:no" better-auth="demo:password" eslint prettier paraglide="languageTags:en,de+demo:no" sveltekit-adapter="adapter:node" --install pnpm . --no-dir-check
+mkdir my-app && cd my-app
+
+pnpm dlx degit kaufmann-dev/project-templates/sveltekit . --mode=tar
 ```
 
-Then apply this agent template inside the project:
-
+### 2. Create the configured SvelteKit app
 ```bash
-pnpm dlx degit kaufmann-dev/project-templates/sveltekit . --force --mode=tar
+pnpm dlx sv create --template minimal --types ts --add tailwindcss="plugins:none" drizzle="database:postgresql+client:postgres.js+podman:no" better-auth="demo:password" eslint prettier vitest="usages:unit,component" paraglide="languageTags:en,de+demo:no" sveltekit-adapter="adapter:node" --install pnpm . --no-dir-check
 ```
 
-Add the required non-`sv` packages after creation:
-
+### 3. Add the required non-`sv` packages
 ```bash
-pnpm add mode-watcher
-pnpm add -D @iconify/tailwind4
+pnpm add mode-watcher @lucide/svelte sveltekit-superforms zod resend better-svelte-email
+
 pnpm dlx shadcn-svelte@latest init --css src/routes/layout.css --lib-alias '$lib' --components-alias '$lib/components' --ui-alias '$lib/components/ui' --utils-alias '$lib/utils' --hooks-alias '$lib/hooks'
 ```
 
-When prompted for the design system preset, choose `Luma`.
+This command will prompt you for the design system. I personally like `Rhea`.
+
+### 4. Install the shadcn-svelte components
+```bash
+pnpm dlx shadcn-svelte@latest add --all
+```
 
 ## Development Commands
 
@@ -60,20 +78,20 @@ DATABASE_URL="postgres://postgres:postgres@localhost:5432/postgres"
 ORIGIN="http://localhost:5173"
 ```
 
-Run PostgreSQL locally with Docker:
+Run PostgreSQL locally with Podman:
 
 ```bash
-docker run --name postgres-sveltekit --env-file .env --publish 5432:5432 --volume postgres-sveltekit-data:/var/lib/postgresql/data --detach postgres:18-alpine
+podman run --name postgres-sveltekit --env-file .env --publish 5432:5432 --volume postgres-sveltekit-data:/var/lib/postgresql/data --detach postgres:18-alpine
 ```
 
 Keep the generated `BETTER_AUTH_SECRET` value, or replace it with a new high-entropy secret. If you change `POSTGRES_USER`, `POSTGRES_PASSWORD`, or `POSTGRES_DB`, update `DATABASE_URL` to match.
 
-Useful Docker commands:
+Useful Podman commands:
 
 ```bash
-docker start postgres-sveltekit
-docker stop postgres-sveltekit
-docker logs postgres-sveltekit
+podman start postgres-sveltekit
+podman stop postgres-sveltekit
+podman logs postgres-sveltekit
 ```
 
 ## Included
@@ -81,8 +99,8 @@ docker logs postgres-sveltekit
 - `AGENTS.md` with SvelteKit, Svelte 5, shadcn-svelte, auth, database, testing, and tooling instructions.
 - `pnpm-workspace.yaml` with pnpm build-script approvals for the selected stack.
 - `.agents/skills/` and `skills-lock.json` with project-local skills, including the Svelte skills from `@sveltejs/mcp`.
-- MCP configuration for Codex, OpenCode, Gemini CLI, and Claude Code.
-- Svelte file-editor subagents for Codex, OpenCode, Claude Code, and Gemini CLI.
+- MCP configuration for Codex, OpenCode, Antigravity, and Claude Code.
+- Svelte file-editor subagents for Codex, OpenCode, Antigravity, and Claude Code.
 
 ## MCP Servers
 
@@ -91,27 +109,14 @@ Enabled by default:
 - `svelte`
 - `shadcn-svelte`
 
-Optional MCP servers are disabled in Codex and OpenCode only:
+Optional MCP servers:
 
-- `playwright`
 - `postgres` via `DATABASE_URL`
 - `resend` via `RESEND_API_KEY`
-- `glitchtip` via `GLITCHTIP_MCP_URL`
 
-Gemini CLI and Claude Code only include the default servers because their project configs do not safely support disabled MCP entries.
+If you decide to use them, Codex & OpenCode already have them configured, but disabled. For Antigravity & Claude Code, you will need to add the configuration manually.
 
-## Optional Add-Ons
-
-Only add optional technologies when the feature is actually needed.
-
-Official `sv add` examples:
-
-```bash
-# Unit or component tests
-pnpm dlx sv add vitest --install pnpm
-
-# End-to-end tests
-pnpm dlx sv add playwright --install pnpm
-```
-
-Other optional stack choices from `AGENTS.md`, such as Superforms, Resend, better-svelte-email, Plausible, and GlitchTip, are not listed as official `sv add` add-ons. Install and configure them only when their feature is needed.
+## Assumptions
+- `Node` is installed
+- `pnpm` is installed and used as the package manager
+- `podman` is installed and used for the local development database
