@@ -36,7 +36,7 @@ pnpm dlx degit kaufmann-dev/project-templates/sveltekit . --mode=tar --force
 
 ### 2. Create the configured SvelteKit app
 > [!WARNING]
-> This command will overwrite this `README.md`. Back it up before running it.
+> This command will overwrite this `README.md`. Back it up or rename it before running it.
 > It will also add a `Project Configuration` section at the very top of `AGENTS.md`. Delete that section after running it.
 
 ```bash
