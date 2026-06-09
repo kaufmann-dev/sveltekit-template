@@ -149,6 +149,18 @@ Use modern Svelte replacements over legacy features:
 - Use `createContext` for typed context instead of unscoped shared module state when state must be per request or per tree.
 - Enable `experimental.async` in `svelte.config.js` to use `await` expressions and `hydratable` (requires Svelte >= 5.36).
 
+### Legacy Features to Avoid in New Code
+
+Avoid these legacy Svelte features in new or refactored code:
+
+- `export let`, `$$props`, `$$restProps`
+- `$: ` reactive blocks or assignments
+- `<slot>`, `$$slots`, `<svelte:fragment>`
+- `<svelte:component>` and `<svelte:self>`
+- `use:action`
+- `class:` directives
+- `on:` event attributes (e.g., `on:click`)
+
 ## UI and Styling
 
 - **shadcn-svelte**: All components are already pre-installed in `src/lib/components/ui/`. **Never run the CLI to install components, and never delete unused shadcn components during codebase cleanup.**
