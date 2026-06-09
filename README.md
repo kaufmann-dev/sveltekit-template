@@ -50,7 +50,13 @@ pnpm dlx sv create --template minimal --types ts \
 ```bash
 pnpm add mode-watcher @lucide/svelte sveltekit-superforms zod resend better-svelte-email better-auth
 
-pnpm dlx shadcn-svelte@latest init --css src/routes/layout.css --lib-alias '$lib' --components-alias '$lib/components' --ui-alias '$lib/components/ui' --utils-alias '$lib/utils' --hooks-alias '$lib/hooks'
+pnpm dlx shadcn-svelte@latest init \
+  --css src/routes/layout.css \
+  --lib-alias '$lib' \
+  --components-alias '$lib/components' \
+  --ui-alias '$lib/components/ui' \
+  --utils-alias '$lib/utils' \
+  --hooks-alias '$lib/hooks'
 ```
 
 This command will prompt you for the design system. I personally like `Rhea`.
@@ -88,7 +94,13 @@ ORIGIN="http://localhost:5173"
 Run PostgreSQL locally with Podman:
 
 ```bash
-podman run --name postgres-sveltekit --env-file .env --publish 5432:5432 --volume postgres-sveltekit-data:/var/lib/postgresql/data --detach postgres:18-alpine
+podman run \
+  --name postgres-sveltekit \
+  --env-file .env \
+  --publish 5432:5432 \
+  --volume postgres-sveltekit-data:/var/lib/postgresql/data \
+  --detach \
+  postgres:18-alpine
 ```
 
 Keep the generated `BETTER_AUTH_SECRET` value, or replace it with a new high-entropy secret. If you change `POSTGRES_USER`, `POSTGRES_PASSWORD`, or `POSTGRES_DB`, update `DATABASE_URL` to match.
