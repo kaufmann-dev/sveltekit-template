@@ -13,7 +13,7 @@
         },
         "playwright": {
             "type": "local",
-            "command": ["pnpm", "dlx", "@playwright/mcp@latest"],
+            "command": ["pnpm", "dlx", "@playwright/mcp@latest", "--browser", "chromium"],
             "enabled": false
         },
         "postgres": {

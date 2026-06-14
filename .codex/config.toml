@@ -8,7 +8,7 @@ enabled = true
 
 [mcp_servers.playwright]
 command = "pnpm"
-args = ["dlx", "@playwright/mcp@latest"]
+args = ["dlx", "@playwright/mcp@latest", "--browser", "chromium"]
 enabled = false
 
 [mcp_servers.postgres]
