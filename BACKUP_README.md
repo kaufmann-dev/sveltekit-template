@@ -28,9 +28,6 @@ Recommended for bigger projects, but not included by default:
 ## Get Started
 
 ### 1. Copy this template into the project folder
-> [!NOTE]
-> Skip this step if you have already cloned this project from GitHub or created it from the GitHub template.
-
 ```bash
 mkdir my-app && cd my-app
 
@@ -39,7 +36,8 @@ pnpm dlx degit kaufmann-dev/sveltekit-template . --mode=tar --force
 
 ### 2. Create the configured SvelteKit app
 > [!WARNING]
-> This command will overwrite this `README.md`. Copy the command in step 3 now.
+> This command will overwrite this `README.md`. Back it up or rename it before running it.
+> It will also add a `Project Configuration` section at the very top of `AGENTS.md`. Delete that section after running it.
 
 ```bash
 pnpm dlx sv create --template minimal --types ts \
@@ -52,15 +50,7 @@ pnpm dlx sv create --template minimal --types ts \
   --install pnpm . --no-dir-check
 ```
 
-### 3. Overwrite the generated .md files
-```bash
-cp -f INSTRUCTIONS.md AGENTS.md && \
-  cp -f INSTRUCTIONS.md CLAUDE.md && \
-  cp -f BACKUP_README.md README.md && \
-  rm -f INSTRUCTIONS.md BACKUP_README.md
-```
-
-### 4. Add the required non-`sv` packages
+### 3. Add the required non-`sv` packages
 ```bash
 pnpm add mode-watcher @lucide/svelte sveltekit-superforms zod resend better-svelte-email better-auth
 
@@ -75,7 +65,7 @@ pnpm dlx shadcn-svelte@latest init \
 
 This command will prompt you for the design system. I personally like `Rhea`.
 
-### 5. Install the shadcn-svelte components
+### 4. Install the shadcn-svelte components
 ```bash
 pnpm dlx shadcn-svelte@latest add --all
 ```
