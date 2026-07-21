@@ -140,7 +140,6 @@ podman logs postgres-sveltekit
 Enabled by default:
 
 - `svelte`
-- `shadcn-svelte`
 
 Optional MCP servers:
 
