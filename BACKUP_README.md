@@ -55,7 +55,6 @@ pnpm dlx sv create --template minimal --types ts \
 ### 3. Overwrite the generated .md files
 ```bash
 cp -f INSTRUCTIONS.md AGENTS.md && \
-  cp -f INSTRUCTIONS.md CLAUDE.md && \
   cp -f BACKUP_README.md README.md && \
   rm -f INSTRUCTIONS.md BACKUP_README.md
 ```
