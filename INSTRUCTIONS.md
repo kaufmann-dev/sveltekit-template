@@ -2,7 +2,7 @@
 
 ## Build and Verification
 
-Derive final commands from `package.json`, `pnpm-workspace.yaml`, and `drizzle.config.*`. Use these defaults:
+Derive final commands from `package.json`, `pnpm-workspace.yaml`, `vite.config.ts`, and `drizzle.config.*`. Use these defaults:
 
 ```bash
 pnpm install
@@ -11,10 +11,12 @@ pnpm check                   # Run before finishing Svelte/TS changes
 pnpm build                   # Run before finishing deployment/routing/server changes
 pnpm test                    # If defined in package.json
 pnpm exec vitest run         # If Vitest is configured without a test script
+pnpm auth:schema             # Regenerate the Better Auth schema after changing auth config or plugins
 pnpm drizzle-kit generate    # Generate schema migrations
 pnpm drizzle-kit migrate     # Execute migrations
 ```
 
+- On a fresh clone, run `pnpm dev` or `pnpm build` once before `pnpm check`. Paraglide generates the gitignored `src/lib/paraglide` directory through its Vite plugin.
 - Always generate and run migrations through Drizzle Kit. Keep schema files and migrations aligned with the project config.
 
 ## Tooling
@@ -28,18 +30,32 @@ pnpm drizzle-kit migrate     # Execute migrations
 
 ## Technology Stack
 
-- **Framework**: SvelteKit with `@sveltejs/adapter-node`
+- **Framework**: SvelteKit 3 with `@sveltejs/adapter-node`
 - **UI**: Tailwind CSS and `shadcn-svelte`
 - **Icons**: `@lucide/svelte`
 - **Theme**: `mode-watcher`
 - **Database**: Drizzle with PostgreSQL
 - **Auth**: Better Auth
-- **Forms**: Superforms and Zod
+- **Forms**: SvelteKit remote functions (`form`) and Zod
 - **Email**: Resend and `better-svelte-email`
 - **i18n**: Paraglide
 - **Testing**: Vitest
 
 Do not use frameworks or libraries just because they are installed. Keep optional infrastructure out of the project until its feature is being implemented.
+
+## SvelteKit 3 Conventions
+
+This is a SvelteKit 3 project. Do not use SvelteKit 2 APIs.
+
+- **Config**: There is no `svelte.config.js`. Configure SvelteKit and the Svelte compiler through the `sveltekit({ ... })` plugin options in `vite.config.ts`. `compilerOptions.experimental.async` and `experimental.remoteFunctions` are enabled.
+- **`#lib`**: Import from `src/lib` with `#lib/...` (declared in `package.json` `imports`), including the file extension, e.g. `#lib/server/db/index.ts` or `#lib/utils.js`. `$lib` does not exist.
+- **Environment**: Declare variables in `src/env.ts` with `defineEnvVars` from `@sveltejs/kit/env`, then import them from `$app/env/private` or `$app/env/public`. Use `browser`, `building`, `dev`, and `version` from `$app/env`. Do not use `$env/*` or `$app/environment`.
+- **State and navigation**: Use `$app/state`, never `$app/stores`. Use `refreshAll` instead of `invalidateAll`, and `goto(url, { shallow: true, state })` instead of `pushState`/`replaceState`. `page.url` is read-only; copy it with `new URL(page.url.href)` before changing it.
+- **Paths**: Use `resolve` and `asset` from `$app/paths`, without a leading `/` for pathnames and assets (e.g. `resolve('blog/hello')`, `asset('logo.png')`). Route IDs keep the leading `/`.
+- **Types**: Import `Handle` and other hook types from `@sveltejs/kit/hooks`, param matcher helpers from `@sveltejs/kit/params`, and remote function types from `$app/server`.
+- **Errors and responses**: Call `error(status, message, extra?)` with a string message. Pass `{ external: true }` (or an origin list) to `redirect` for external URLs. Use `Response.json(...)` instead of the deprecated `json(...)`.
+- **Param matchers**: Declare all matchers in `src/params.ts` with `defineParams`; there is no `src/params/` directory.
+- **Server-only code**: Any `server` directory outside `src/routes` and any file with a `server` segment (e.g. `db.server.ts`, `server.ts`) is server-only.
 
 ## Svelte Implementation Patterns
 
@@ -146,7 +162,7 @@ Use modern Svelte replacements over legacy features:
 - Use keyed `{#each}` blocks with stable object identifiers. Never use the index as a key. Avoid destructuring if mutating the item.
 - Use CSS custom properties for parent-to-child styling boundaries.
 - Use `createContext` for typed context instead of unscoped shared module state when state must be per request or per tree.
-- Enable `experimental.async` in `svelte.config.js` to use `await` expressions and `hydratable` (requires Svelte >= 5.36).
+- Use `await` expressions and `hydratable` where they simplify data loading; `compilerOptions.experimental.async` is already enabled in `vite.config.ts`.
 
 ### Legacy Features to Avoid in New Code
 
@@ -164,10 +180,10 @@ Avoid these legacy Svelte features in new or refactored code:
 
 - **shadcn-svelte**: All components are already pre-installed in `src/lib/components/ui/`. **Never run the CLI to install components, and never delete unused shadcn components during codebase cleanup.**
   - Never import components from a package named `shadcn-svelte`.
-  - Import them only from local `$lib/components/ui/...` paths.
+  - Import them only from local `#lib/components/ui/...` paths (e.g. `#lib/components/ui/button/index.js`).
   - Use local component source as the final source of truth once a component has been copied into the project.
   - Customize with Tailwind classes using `class` and the local `cn()` helper.
-- Available shadcn-svelte components: `accordion alert alert-dialog aspect-ratio avatar badge breadcrumb button calendar card carousel chart checkbox collapsible combobox command context-menu data-table date-picker dialog drawer dropdown-menu form hover-card input input-otp label menubar navigation-menu pagination popover progress radio-group range-calendar resizable scroll-area select separator sheet sidebar skeleton slider sonner switch table tabs textarea toggle toggle-group tooltip`
+- Available shadcn-svelte components: `accordion alert alert-dialog aspect-ratio attachment avatar badge breadcrumb bubble button button-group calendar card carousel chart checkbox collapsible command context-menu dialog drawer dropdown-menu empty field hover-card input input-group input-otp item kbd label marker menubar message native-select navigation-menu pagination popover progress radio-group range-calendar resizable scroll-area select separator sheet sidebar skeleton slider sonner spinner switch table tabs textarea toggle toggle-group tooltip`. Build comboboxes from `popover` + `command`, date pickers from `popover` + `calendar`, and data tables from `table`. The `form` component is intentionally not installed.
 - **Icons**: Always use `@lucide/svelte` (e.g., `<Search class="size-4" />`).
 - **Theming**: Use `setMode("light" | "dark" | "system")` or `toggleMode` from `mode-watcher` for controls. Add `ModeWatcher` once in the root layout:
   ```svelte
@@ -183,10 +199,40 @@ Avoid these legacy Svelte features in new or refactored code:
 
 - **Authentication**: Check current Better Auth documentation before implementing providers, plugins, adapters, session handling, or account flows.
   - *Server*: `export const auth = betterAuth({ ... });`
-  - *Hook*: `return svelteKitHandler({ event, resolve, auth, building });`
+  - *Setup*: `sv` generated the server instance in `#lib/server/auth.ts` and the session hook in `src/hooks.server.ts`. Extend those files instead of creating new ones.
+  - *Hook*: `return svelteKitHandler({ event, resolve, auth, building });` with `building` from `$app/env`.
   - *Client*: `export const authClient = createAuthClient();`
   - *Cookies*: `plugins: [sveltekitCookies(getRequestEvent)]`
-- **Forms**: Always use Superforms with Zod. Follow the chain: `zod schema -> superforms -> formsnap -> shadcn-svelte form components`. Use `Form.Field`, `Form.Control`, and shadcn error components rather than ad hoc markup.
+- **Forms**: Always use remote functions with Zod. Follow the chain: `zod schema -> form(...) in a .remote.ts file -> shadcn-svelte field components`. Do not use Superforms, formsnap, or form actions for new forms.
+  - Spread the form onto `<form {...myForm}>` and every control's attributes from `myForm.fields.<name>.as('<type>')`. Never set `name` manually; submissions without `.as(...)` attributes are rejected.
+  - Render issues with `Field.Error errors={myForm.fields.<name>.issues()}` and mark invalid fields with `data-invalid`.
+  - Export shared schemas from a regular module (not the `.remote.ts` file) when the client needs them for `myForm.preflight(schema)`.
+  ```ts
+  // src/routes/newsletter.remote.ts
+  import { form } from "$app/server";
+  import { z } from "zod";
+
+  export const subscribe = form(z.object({ email: z.email() }), async ({ email }) => {
+    // ...
+  });
+  ```
+  ```svelte
+  <script lang="ts">
+    import * as Field from "#lib/components/ui/field/index.js";
+    import { Input } from "#lib/components/ui/input/index.js";
+    import { Button } from "#lib/components/ui/button/index.js";
+    import { subscribe } from "./newsletter.remote";
+  </script>
+
+  <form {...subscribe}>
+    <Field.Field data-invalid={!!subscribe.fields.email.issues()}>
+      <Field.Label for="email">Email</Field.Label>
+      <Input id="email" {...subscribe.fields.email.as("email")} />
+      <Field.Error errors={subscribe.fields.email.issues()} />
+    </Field.Field>
+    <Button type="submit" disabled={!!subscribe.pending}>Subscribe</Button>
+  </form>
+  ```
 - **Email**: Use `better-svelte-email` for templates and Resend for delivery. Render components in server-only code, and send both HTML and plain text.
   ```ts
   import Renderer, { toPlainText } from "better-svelte-email/render";
@@ -201,8 +247,9 @@ Avoid these legacy Svelte features in new or refactored code:
 
 For Coolify and Nixpacks:
 - If `pnpm-workspace.yaml` exists in a single-package app, keep a non-empty `packages` list with `.` included.
-- Use `engines.node` and `nixpacks.toml` to pin compatible Node behavior when dependencies require a minimum patch version.
-- Read deployment environment variables from `process.env`. Load `.env` only after checking that the file exists.
+- Use `engines.node` and `nixpacks.toml` to pin compatible Node behavior when dependencies require a minimum patch version. SvelteKit 3 requires Node 22.17 or newer.
+- In app code, read environment variables through `src/env.ts` and `$app/env/*`. In standalone scripts (seeds, migrations), read `process.env` and load `.env` only after checking that the file exists.
+- `adapter-node` no longer reads `ORIGIN`. Behind Coolify's reverse proxy, set `PROTOCOL_HEADER=x-forwarded-proto` and `HOST_HEADER=x-forwarded-host`, or set `paths.origin` in the `sveltekit()` options. `ORIGIN` remains the Better Auth base URL.
 - Validate seed script environment variables before calling Better Auth APIs.
 - Document and enforce minimum seeded account password lengths.
 - Let Nixpacks handle the install phase unless a project-specific reason requires otherwise.

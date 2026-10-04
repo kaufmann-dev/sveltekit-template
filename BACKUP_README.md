@@ -6,7 +6,7 @@
 | Framework                 | SvelteKit, @sveltejs/adapter-node                         |
 | UI & Styling              | Tailwind CSS, shadcn-svelte, @lucide/svelte, mode-watcher |
 | Data & Auth               | PostgreSQL, Drizzle ORM, Better Auth                      |
-| Forms & Validation        | Superforms, Zod                                           |
+| Forms & Validation        | SvelteKit remote functions, Zod                           |
 | Email                     | Resend, better-svelte-email                               |
 | Internationalisation      | Paraglide                                                 |
 | Testing & Quality         | Vitest, svelte-check, ESLint, Prettier                    |
@@ -45,10 +45,13 @@ pnpm dlx degit kaufmann-dev/sveltekit-template . --mode=tar --force
 pnpm dlx sv create --template minimal --types ts \
   --add tailwindcss="plugins:none" \
   drizzle="database:postgresql+client:postgres.js+docker:no" \
+  better-auth="demo:none" \
+  experimental="features:async,remoteFunctions" \
   eslint prettier \
   vitest="usages:unit,component" \
   paraglide="languageTags:en,de+demo:no" \
   sveltekit-adapter="adapter:node" \
+  ai-tools="ide:claude-code,opencode+delivery:plugin" \
   --install pnpm . --no-dir-check
 ```
 
@@ -61,22 +64,33 @@ cp -f INSTRUCTIONS.md AGENTS.md && \
 
 ### 4. Add the required non-`sv` packages
 ```bash
-pnpm add mode-watcher @lucide/svelte sveltekit-superforms zod resend better-svelte-email better-auth
+pnpm add mode-watcher @lucide/svelte zod resend better-svelte-email
 
 pnpm dlx shadcn-svelte@latest init \
   --css src/routes/layout.css \
-  --lib-alias '$lib' \
-  --components-alias '$lib/components' \
-  --ui-alias '$lib/components/ui' \
-  --utils-alias '$lib/utils' \
-  --hooks-alias '$lib/hooks'
+  --lib-alias '#lib' \
+  --components-alias '#lib/components' \
+  --ui-alias '#lib/components/ui' \
+  --utils-alias '#lib/utils' \
+  --hooks-alias '#lib/hooks'
 ```
 
 This command will prompt you for the design system. I personally like `Rhea`.
 
 ### 5. Install the shadcn-svelte components
+The `form` component is left out because it depends on Superforms and formsnap. Forms use remote functions with the `field` components instead.
+
 ```bash
-pnpm dlx shadcn-svelte@latest add --all
+pnpm dlx shadcn-svelte@latest add --yes \
+  accordion alert alert-dialog aspect-ratio attachment avatar badge breadcrumb bubble \
+  button button-group calendar card carousel chart checkbox collapsible command \
+  context-menu dialog drawer dropdown-menu empty field hover-card input input-group \
+  input-otp item kbd label marker menubar message native-select navigation-menu \
+  pagination popover progress radio-group range-calendar resizable scroll-area select \
+  separator sheet sidebar skeleton slider sonner spinner switch table tabs textarea \
+  toggle toggle-group tooltip
+
+pnpm format
 ```
 
 ## Development Commands
@@ -116,7 +130,15 @@ podman run \
   postgres:18-alpine
 ```
 
-Keep the generated `BETTER_AUTH_SECRET` value, or replace it with a new high-entropy secret. If you change `POSTGRES_USER`, `POSTGRES_PASSWORD`, or `POSTGRES_DB`, update `DATABASE_URL` to match.
+`ORIGIN` is the Better Auth base URL. Keep the generated `BETTER_AUTH_SECRET` value, or replace it with a new high-entropy secret. If you change `POSTGRES_USER`, `POSTGRES_PASSWORD`, or `POSTGRES_DB`, update `DATABASE_URL` to match.
+
+Create the Better Auth tables:
+
+```bash
+pnpm auth:schema
+pnpm drizzle-kit generate
+pnpm drizzle-kit migrate
+```
 
 Useful Podman commands:
 
@@ -128,11 +150,12 @@ podman logs postgres-sveltekit
 
 ## Included
 
-- `AGENTS.md` with SvelteKit, Svelte 5, shadcn-svelte, auth, database, testing, and tooling instructions.
+- `AGENTS.md` with SvelteKit 3, Svelte 5, shadcn-svelte, auth, database, testing, and tooling instructions.
 - `pnpm-workspace.yaml` with pnpm build-script approvals for the selected stack.
-- `.agents/skills/` and `skills-lock.json` with project-local skills, including the Svelte skills from `@sveltejs/mcp`.
-- MCP configuration for Codex, OpenCode, Antigravity, and Claude Code.
-- Svelte file-editor subagents for Codex, OpenCode, Antigravity, and Claude Code.
+- `.prettierignore` that skips vendored skills and generated Paraglide project files.
+- `.agents/skills/` and `skills-lock.json` with project-local skills, including the Svelte skills from `sveltejs/ai-tools`.
+- The official Svelte plugin for Claude Code and OpenCode, added by the `sv` `ai-tools` add-on. It bundles the Svelte MCP server, skills, and the Svelte file-editor subagent.
+- Svelte MCP configuration and Svelte file-editor subagents for Codex and Antigravity.
 
 ## MCP Servers
 
@@ -147,7 +170,9 @@ Optional MCP servers:
 
 If you decide to use them, Codex & OpenCode already have them configured, but disabled. For Antigravity & Claude Code, you will need to add the configuration manually.
 
+Claude Code and OpenCode get the `svelte` server through the Svelte plugin. Codex and Antigravity get it through `.codex/config.toml` and `.gemini/settings.json`.
+
 ## Assumptions
-- `Node` is installed
+- `Node` 22.17 or newer is installed (required by SvelteKit 3)
 - `pnpm` is installed and used as the package manager
 - `podman` is installed and used for the local development database
