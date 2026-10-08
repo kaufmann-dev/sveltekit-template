@@ -194,6 +194,14 @@ Avoid these legacy Svelte features in new or refactored code:
   <ModeWatcher />
   {@render children()}
   ```
+- **Visual rules**: They live in `src/routes/layout.css`: tokens, `--radius`, and a base-layer reset. Use the theme tokens (`bg-background`, `text-muted-foreground`, `border-border`, ...) and `rounded-*` utilities instead of hardcoded colors or radii.
+  - The reset zeroes drop shadows and focus rings, disables transitions and animations, and draws keyboard focus as a 2px outline. Do not add `shadow-*`, transitions, decorative animation, or custom focus rings. Only `animate-spin` indicators move.
+  - Mark surface edges with `border` or the `ring-1` that shadcn components already use.
+  - Use color only to convey hierarchy, state, or category, and never as the only signal.
+- **Template helpers** (not shadcn components, kept in `src/lib/components/`):
+  - `#lib/components/choice-group/index.js` (`ChoiceGroup.Root` and `ChoiceGroup.Item`) builds single-choice option groups. Use it instead of raw `ToggleGroup`. It keeps exactly one option selected.
+  - `INPUT_SURFACE` from `#lib/components/input-surface.js` gives controls that act like form fields (toggles, select-style triggers) the same fill as `Input`. Combine it with a base style that has no `dark:` background overrides, such as `buttonVariants({ variant: "secondary" })`.
+- `src/lib/components/ui` is generated vendor code and is excluded from ESLint.
 
 ## Backend and Services
 

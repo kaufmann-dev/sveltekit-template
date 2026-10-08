@@ -22,6 +22,7 @@ Recommended for bigger projects, but not included by default:
 - [Development Commands](#development-commands)
 - [Development Database](#development-database)
 - [Included](#included)
+- [Design](#design)
 - [MCP Servers](#mcp-servers)
 - [Assumptions](#assumptions)
 
@@ -67,15 +68,19 @@ cp -f INSTRUCTIONS.md AGENTS.md && \
 pnpm add mode-watcher @lucide/svelte zod resend better-svelte-email
 
 pnpm dlx shadcn-svelte@latest init \
+  --preset b27GcrTs \
+  --base-color neutral \
   --css src/routes/layout.css \
   --lib-alias '#lib' \
   --components-alias '#lib/components' \
   --ui-alias '#lib/components/ui' \
   --utils-alias '#lib/utils' \
   --hooks-alias '#lib/hooks'
+
+cp -f shadcn/layout.css src/routes/layout.css
 ```
 
-This command will prompt you for the design system. I personally like `Rhea`.
+The preset selects `rhea`, `neutral`, Lucide icons, Inter, a `0.45rem` radius, and the subtle menu accent. `init` asks once to confirm its changes to `src/routes/layout.css`; answer yes. The `cp` replaces that file with the template theme (see [Design](#design)).
 
 ### 5. Install the shadcn-svelte components
 The `form` component is left out because it depends on Superforms and formsnap. Forms use remote functions with the `field` components instead.
@@ -89,6 +94,12 @@ pnpm dlx shadcn-svelte@latest add --yes \
   pagination popover progress radio-group range-calendar resizable scroll-area select \
   separator sheet sidebar skeleton slider sonner spinner switch table tabs textarea \
   toggle toggle-group tooltip
+
+mkdir -p src/lib/components && cp -r shadcn/components/. src/lib/components/
+rm -rf shadcn
+
+# Generated shadcn-svelte components are vendor code: keep them out of ESLint
+sed -i "s|^\tincludeIgnoreFile(gitignorePath),|&\n\t// shadcn-svelte components are generated vendor code.\n\t{ ignores: ['src/lib/components/ui/**'] },|" eslint.config.js
 
 pnpm format
 ```
@@ -136,6 +147,7 @@ Create the Better Auth tables:
 
 ```bash
 pnpm auth:schema
+pnpm format
 pnpm drizzle-kit generate
 pnpm drizzle-kit migrate
 ```
@@ -156,6 +168,16 @@ podman logs postgres-sveltekit
 - `.agents/skills/` and `skills-lock.json` with project-local skills, including the Svelte skills from `sveltejs/ai-tools`.
 - The official Svelte plugin for Claude Code and OpenCode, added by the `sv` `ai-tools` add-on. It bundles the Svelte MCP server, skills, and the Svelte file-editor subagent.
 - Svelte MCP configuration and Svelte file-editor subagents for Codex and Antigravity.
+- `shadcn/` with the shared design theme and UI helpers. Steps 4 and 5 apply it and delete the folder.
+
+## Design
+
+The theme is flat, monochrome, and quiet.
+
+- `shadcn/layout.css` replaces the file `init` generates. It holds the light and dark tokens (`#ffffff` and a soft near-black, slightly cool text), a `0.375rem` radius, Inter, and sidebar and chart tokens.
+- A base-layer reset zeroes drop shadows and focus rings, disables transitions and animations (spinners with `animate-spin` keep turning), and draws keyboard focus as a 2px outline. Cards, popovers, and menus keep their 1px `ring-1` edge.
+- `ChoiceGroup` (`src/lib/components/choice-group`) is an exclusive single-choice button group built on `ToggleGroup`. The selected item gets the primary fill.
+- `INPUT_SURFACE` (`src/lib/components/input-surface.ts`) gives toggles and select-style triggers the same fill as inputs, so a toolbar reads as one family.
 
 ## MCP Servers
 
