@@ -9,10 +9,9 @@ set -euo pipefail
 
 TEMPLATE_TARBALL="https://codeload.github.com/kaufmann-dev/sveltekit-template/tar.gz/main"
 MIN_NODE="22.17.0"
-# Pinned because new releases of these CLIs add prompts that break unattended runs.
-# Bump deliberately and rerun the script to verify.
-SV_VERSION="1.2.0"
-SHADCN_SVELTE_VERSION="1.8.0"
+# pnpm holds back releases younger than a day by default. The setup CLIs always run at their
+# newest version; the app's own dependencies keep that delay.
+DLX=(pnpm --config.minimumReleaseAge=0 dlx)
 
 log() { printf '==> %s\n' "$*"; }
 die() { printf 'error: %s\n' "$*" >&2; exit 1; }
@@ -56,7 +55,7 @@ main() {
 	cd "$target"
 
 	log "Creating SvelteKit app"
-	pnpm dlx "sv@$SV_VERSION" create --template minimal --types ts --add tailwindcss="plugins:none" \
+	"${DLX[@]}" sv@latest create --template minimal --types ts --add tailwindcss="plugins:none" \
 		drizzle="database:postgresql+client:postgres.js+docker:no" \
 		better-auth="demo:none" \
 		experimental="features:async,remoteFunctions" \
@@ -64,7 +63,7 @@ main() {
 		vitest="usages:unit,component" \
 		paraglide="languageTags:en,de+demo:no" \
 		sveltekit-adapter="adapter:node" \
-		ai-tools="ide:claude-code,opencode+delivery:plugin" \
+		ai-tools="ide:claude-code,opencode+delivery:plugin+optInSkills:none" \
 		--install pnpm . --no-dir-check
 	# CLI prompts exit 0 when they read EOF, so check that each tool actually finished.
 	[ -f package.json ] || die "sv create did not finish; a new sv version may ask a question that needs a flag"
@@ -81,7 +80,7 @@ main() {
 	# `--reinstall` makes init overwrite without asking. Without it, init prompts to update
 	# layout.css, and with no TTY it exits 0 without installing dependencies. There are no
 	# components to reinstall yet, and layout.css is replaced below.
-	pnpm dlx "shadcn-svelte@$SHADCN_SVELTE_VERSION" init --reinstall \
+	"${DLX[@]}" shadcn-svelte@latest init --reinstall \
 		--preset b27GcrTs \
 		--base-color neutral \
 		--css src/routes/layout.css \
@@ -96,7 +95,7 @@ main() {
 
 	log "Adding shadcn-svelte components"
 	# `form` is left out: it depends on Superforms and formsnap. Forms use remote functions.
-	pnpm dlx "shadcn-svelte@$SHADCN_SVELTE_VERSION" add --yes \
+	"${DLX[@]}" shadcn-svelte@latest add --yes \
 		accordion alert alert-dialog aspect-ratio attachment avatar badge breadcrumb bubble \
 		button button-group calendar card carousel chart checkbox collapsible command \
 		context-menu dialog drawer dropdown-menu empty field hover-card input input-group \
@@ -117,6 +116,20 @@ main() {
 		const ignore = "\t// shadcn-svelte components are generated vendor code.\n\t{ ignores: [\"src/lib/components/ui/**\"] },\n";
 		fs.writeFileSync("eslint.config.js", src.replace(anchor, anchor + ignore));
 	' || die "could not add the shadcn-svelte ignore to eslint.config.js"
+
+	log "Writing development database settings to .env"
+	# sv writes a placeholder DATABASE_URL that is not a valid URL, which breaks auth:schema.
+	node -e '
+		const fs = require("node:fs");
+		const url = "postgres://postgres:postgres@localhost:5432/postgres";
+		let env = fs.readFileSync(".env", "utf8").replace(/^DATABASE_URL=.*$/m, `DATABASE_URL="${url}"`);
+		env += "\nPOSTGRES_USER=\"postgres\"\nPOSTGRES_PASSWORD=\"postgres\"\nPOSTGRES_DB=\"postgres\"\n";
+		fs.writeFileSync(".env", env);
+	'
+
+	log "Generating the Better Auth schema and first migration"
+	pnpm auth:schema
+	pnpm drizzle-kit generate
 
 	log "Formatting"
 	pnpm format
