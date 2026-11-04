@@ -36,7 +36,7 @@ curl -fsSL https://raw.githubusercontent.com/kaufmann-dev/sveltekit-template/mai
 
 `create.sh` downloads this template and runs `sv create` with the stack add-ons. It then installs the extra packages, initializes shadcn-svelte with the template theme and components, and puts the agent instructions in place as `AGENTS.md`. The target directory must be new or empty.
 
-It never prompts, so an agent can run the same command without cloning this repository.
+It never prompts, so an agent can run the same command without cloning this repository. The `sv` and `shadcn-svelte` versions are pinned at the top of `create.sh`, because new releases of those CLIs can add prompts. Bump them deliberately and rerun the script.
 
 - shadcn-svelte uses the `b27GcrTs` preset: `rhea`, `neutral`, Lucide icons, Inter, a `0.45rem` radius, and the subtle menu accent. The template's `shadcn/layout.css` then replaces the generated stylesheet (see [Design](#design)).
 - The `form` component is left out because it depends on Superforms and formsnap. Forms use remote functions with the `field` components instead.

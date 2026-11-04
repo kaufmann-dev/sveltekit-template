@@ -9,6 +9,10 @@ set -euo pipefail
 
 TEMPLATE_TARBALL="https://codeload.github.com/kaufmann-dev/sveltekit-template/tar.gz/main"
 MIN_NODE="22.17.0"
+# Pinned because new releases of these CLIs add prompts that break unattended runs.
+# Bump deliberately and rerun the script to verify.
+SV_VERSION="1.2.0"
+SHADCN_SVELTE_VERSION="1.8.0"
 
 log() { printf '==> %s\n' "$*"; }
 die() { printf 'error: %s\n' "$*" >&2; exit 1; }
@@ -52,7 +56,7 @@ main() {
 	cd "$target"
 
 	log "Creating SvelteKit app"
-	pnpm dlx sv create --template minimal --types ts --add tailwindcss="plugins:none" \
+	pnpm dlx "sv@$SV_VERSION" create --template minimal --types ts --add tailwindcss="plugins:none" \
 		drizzle="database:postgresql+client:postgres.js+docker:no" \
 		better-auth="demo:none" \
 		experimental="features:async,remoteFunctions" \
@@ -62,6 +66,8 @@ main() {
 		sveltekit-adapter="adapter:node" \
 		ai-tools="ide:claude-code,opencode+delivery:plugin" \
 		--install pnpm . --no-dir-check
+	# CLI prompts exit 0 when they read EOF, so check that each tool actually finished.
+	[ -f package.json ] || die "sv create did not finish; a new sv version may ask a question that needs a flag"
 
 	log "Restoring template README.md and AGENTS.md"
 	cp -f "$tmp/INSTRUCTIONS.md" AGENTS.md
@@ -75,7 +81,7 @@ main() {
 	# `--reinstall` makes init overwrite without asking. Without it, init prompts to update
 	# layout.css, and with no TTY it exits 0 without installing dependencies. There are no
 	# components to reinstall yet, and layout.css is replaced below.
-	pnpm dlx shadcn-svelte@latest init --reinstall \
+	pnpm dlx "shadcn-svelte@$SHADCN_SVELTE_VERSION" init --reinstall \
 		--preset b27GcrTs \
 		--base-color neutral \
 		--css src/routes/layout.css \
@@ -84,11 +90,13 @@ main() {
 		--ui-alias '#lib/components/ui' \
 		--utils-alias '#lib/utils' \
 		--hooks-alias '#lib/hooks'
+	grep -q '"tw-animate-css"' package.json ||
+		die "shadcn-svelte init did not finish; a new version may ask a question that needs a flag"
 	cp -f shadcn/layout.css src/routes/layout.css
 
 	log "Adding shadcn-svelte components"
 	# `form` is left out: it depends on Superforms and formsnap. Forms use remote functions.
-	pnpm dlx shadcn-svelte@latest add --yes \
+	pnpm dlx "shadcn-svelte@$SHADCN_SVELTE_VERSION" add --yes \
 		accordion alert alert-dialog aspect-ratio attachment avatar badge breadcrumb bubble \
 		button button-group calendar card carousel chart checkbox collapsible command \
 		context-menu dialog drawer dropdown-menu empty field hover-card input input-group \
