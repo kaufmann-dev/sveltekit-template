@@ -40,7 +40,7 @@ It never prompts, so an agent can run the same command without cloning this repo
 
 - shadcn-svelte uses the `b27GcrTs` preset: `rhea`, `neutral`, Lucide icons, Inter, a `0.45rem` radius, and the subtle menu accent. The generated stylesheet and components are kept unchanged.
 - The `form` component is left out because it depends on Superforms and formsnap. Forms use remote functions with the `field` components instead.
-- Generated shadcn-svelte components in `src/lib/components/ui/` are vendor code and are excluded from ESLint.
+- All listed shadcn-svelte components remain preinstalled. ESLint checks them, with narrowly scoped exceptions for the stock Button link forwarding and ChartTooltip callback parameter.
 
 ## Development Commands
 
@@ -54,6 +54,12 @@ pnpm format
 pnpm build
 pnpm preview
 ```
+
+## Template Verification
+
+GitHub Actions verifies a fresh scaffold on pushes, pull requests, daily at 06:23 UTC, and manual runs. It uses Node 24 and the latest setup CLIs, checks that the auth schema and a SQL migration exist, runs build, type checking, and lint, then checks production HTTP responses (200 for `/`, 404 for an unknown route). It does not test database connectivity or sign-in.
+
+From this template checkout, run the same check with `bash scripts/verify-scaffold.sh`. It creates and removes a temporary app and loads that app's `.env` for the production server. The workflow and verification script are not copied into generated applications.
 
 ## Development Database
 

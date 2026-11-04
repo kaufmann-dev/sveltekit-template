@@ -72,6 +72,8 @@ main() {
 	cp -f "$tmp/INSTRUCTIONS.md" AGENTS.md
 	cp -f "$tmp/README.md" README.md
 	rm -f INSTRUCTIONS.md create.sh
+	# Template verification belongs to this repository, not generated applications.
+	rm -f .github/workflows/scaffold.yml scripts/verify-scaffold.sh
 
 	log "Adding packages"
 	pnpm add mode-watcher @lucide/svelte zod resend better-svelte-email
@@ -103,15 +105,31 @@ main() {
 		separator sheet sidebar skeleton slider sonner spinner switch table tabs textarea \
 		toggle toggle-group tooltip
 
-	log "Excluding generated shadcn-svelte components from ESLint"
-	node -e '
-		const fs = require("node:fs");
-		const anchor = "\tincludeIgnoreFile(gitignorePath),\n";
-		const src = fs.readFileSync("eslint.config.js", "utf8");
-		if (!src.includes(anchor)) process.exit(1);
-		const ignore = "\t// shadcn-svelte components are generated vendor code.\n\t{ ignores: [\"src/lib/components/ui/**\"] },\n";
-		fs.writeFileSync("eslint.config.js", src.replace(anchor, anchor + ignore));
-	' || die "could not add the shadcn-svelte ignore to eslint.config.js"
+	log "Configuring narrow ESLint exceptions for stock components"
+	node --input-type=module <<'JS'
+import fs from 'node:fs';
+const file = 'eslint.config.js';
+const source = fs.readFileSync(file, 'utf8');
+const end = source.lastIndexOf(');');
+if (end < 0) throw new Error('Could not locate ESLint configuration');
+const overrides = `,
+	{
+		files: ['src/lib/components/ui/button/button.svelte'],
+		rules: {
+			// Generic wrapper accepts already-resolved internal or external URLs.
+			'svelte/no-navigation-without-resolve': 'off'
+		}
+	},
+	{
+		files: ['src/lib/components/ui/chart/chart-tooltip.svelte'],
+		rules: {
+			// Stock formatter intentionally leaves this callback argument unused.
+			'@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_payload$' }]
+		}
+	}
+`;
+fs.writeFileSync(file, source.slice(0, end).trimEnd() + overrides + source.slice(end));
+JS
 
 	log "Writing development database settings to .env"
 	# sv writes a placeholder DATABASE_URL that is not a valid URL, which breaks auth:schema.
