@@ -30,6 +30,16 @@ pnpm exec prettier --stdin-filepath AGENTS.md < "$repo/template/AGENTS.md" | cmp
 pnpm build
 pnpm check
 pnpm lint
+pnpm exec vitest run
+
+# Unit-only scaffolds should not install a browser test provider as a direct dependency.
+node --input-type=module <<'JS'
+import fs from 'node:fs';
+const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+for (const name of ['playwright', '@playwright/test', '@vitest/browser-playwright', 'vitest-browser-svelte']) {
+  if (pkg.dependencies?.[name] || pkg.devDependencies?.[name]) throw new Error(`Unexpected browser test dependency: ${name}`);
+}
+JS
 
 HOST=127.0.0.1 PORT=4173 node --env-file=.env build >"$work/server.log" 2>&1 &
 server_pid=$!

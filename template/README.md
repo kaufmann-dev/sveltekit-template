@@ -30,13 +30,14 @@ Use pnpm for project scripts:
 ```bash
 pnpm dev
 pnpm check
+pnpm exec vitest run
 pnpm lint
 pnpm format
 pnpm build
 pnpm preview
 ```
 
-On a fresh clone, run `pnpm build` once before `pnpm check` so Paraglide generates its runtime.
+On a fresh clone, run `pnpm build` once before `pnpm check` so Paraglide generates its runtime. Vitest is configured for unit tests; browser component and end-to-end testing can be added if needed. For agent-driven UI checks, use `agent-browser` when available; it requires a compatible Chrome or Chromium installation.
 
 ## Development Database
 

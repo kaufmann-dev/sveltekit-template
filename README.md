@@ -60,6 +60,6 @@ For application commands, database setup, and included tooling, see [the applica
 
 ## Template Verification
 
-GitHub Actions verifies a fresh scaffold on pushes, pull requests, daily at 06:23 UTC, and manual runs. It enables verbose setup output and uses Node 24 and the latest setup CLIs, checks that the auth schema and a SQL migration exist, runs build, type checking, and lint, then checks production HTTP responses (200 for `/`, 404 for an unknown route). It does not test database connectivity or sign-in.
+GitHub Actions verifies a fresh scaffold on pushes, pull requests, daily at 06:23 UTC, and manual runs. It enables verbose setup output and uses Node 24 and the latest setup CLIs, checks that the auth schema and a SQL migration exist, runs build, type checking, lint, and unit tests, then checks production HTTP responses (200 for `/`, 404 for an unknown route). It does not test database connectivity or sign-in.
 
 From this template checkout, run the same check with `bash scripts/verify-scaffold.sh`. It creates and removes a temporary app and loads that app's `.env` for the production server. The workflow and verification script are not copied into generated applications.

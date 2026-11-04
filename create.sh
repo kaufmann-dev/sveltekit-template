@@ -83,7 +83,7 @@ main() {
 		better-auth="demo:none" \
 		experimental="features:async,remoteFunctions" \
 		eslint prettier \
-		vitest="usages:unit,component" \
+		vitest="usages:unit" \
 		paraglide="languageTags:en,de+demo:no" \
 		sveltekit-adapter="adapter:node" \
 		ai-tools="ide:claude-code,opencode+delivery:plugin+optInSkills:none" \

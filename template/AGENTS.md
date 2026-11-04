@@ -21,6 +21,7 @@ pnpm drizzle-kit migrate     # Execute migrations
 
 ## Tooling
 
+- **Browser interaction**: Use `agent-browser` for UI checks when explicitly requested or genuinely necessary. Run `agent-browser --help` before first use in a task. Vitest is configured for unit tests; add automated browser tests when a project needs them.
 - **Svelte MCP**: Use before writing, reviewing, or refactoring Svelte or SvelteKit code.
   - Call `list-sections` to identify relevant documentation.
   - Fetch all relevant sections with `get-documentation`.
