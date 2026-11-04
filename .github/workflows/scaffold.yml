@@ -23,4 +23,6 @@ jobs:
       - name: Install pnpm
         run: npm install --global pnpm
       - name: Verify fresh application
+        env:
+          VERBOSE: '1'
         run: bash scripts/verify-scaffold.sh

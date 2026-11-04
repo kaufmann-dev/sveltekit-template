@@ -38,6 +38,12 @@ curl -fsSL https://raw.githubusercontent.com/kaufmann-dev/sveltekit-template/mai
 
 It never prompts, so an agent can run the same command without cloning this repository. It always runs the newest `sv` and `shadcn-svelte`. If a new release adds a question, the script stops with an error instead of creating a half-finished app.
 
+Setup shows only its progress messages by default. If a command fails, it prints the failed step and captured command output, then stops. Set `VERBOSE=1` to stream command output while setup runs. When piping the installer, set it on Bash:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/kaufmann-dev/sveltekit-template/main/create.sh | VERBOSE=1 bash -s -- my-app
+```
+
 - shadcn-svelte uses the `b27GcrTs` preset: `rhea`, `neutral`, Lucide icons, Inter, a `0.45rem` radius, and the subtle menu accent. The generated stylesheet and components are kept unchanged.
 - The `form` component is left out because it depends on Superforms and formsnap. Forms use remote functions with the `field` components instead.
 - All listed shadcn-svelte components remain preinstalled. ESLint checks them, with narrowly scoped exceptions for the stock Button link forwarding and ChartTooltip callback parameter.
@@ -57,7 +63,7 @@ pnpm preview
 
 ## Template Verification
 
-GitHub Actions verifies a fresh scaffold on pushes, pull requests, daily at 06:23 UTC, and manual runs. It uses Node 24 and the latest setup CLIs, checks that the auth schema and a SQL migration exist, runs build, type checking, and lint, then checks production HTTP responses (200 for `/`, 404 for an unknown route). It does not test database connectivity or sign-in.
+GitHub Actions verifies a fresh scaffold on pushes, pull requests, daily at 06:23 UTC, and manual runs. It enables verbose setup output and uses Node 24 and the latest setup CLIs, checks that the auth schema and a SQL migration exist, runs build, type checking, and lint, then checks production HTTP responses (200 for `/`, 404 for an unknown route). It does not test database connectivity or sign-in.
 
 From this template checkout, run the same check with `bash scripts/verify-scaffold.sh`. It creates and removes a temporary app and loads that app's `.env` for the production server. The workflow and verification script are not copied into generated applications.
 
