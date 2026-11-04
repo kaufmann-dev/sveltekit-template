@@ -20,6 +20,11 @@ test -s src/lib/server/db/auth.schema.ts
 find drizzle -name '*.sql' -type f -size +0c | grep -q .
 test ! -e .github/workflows/scaffold.yml
 test ! -e scripts/verify-scaffold.sh
+test ! -e template
+test ! -e INSTRUCTIONS.md
+# Compare the installed documentation after the same formatting used by setup.
+pnpm exec prettier --stdin-filepath README.md < "$repo/template/README.md" | cmp - README.md
+pnpm exec prettier --stdin-filepath AGENTS.md < "$repo/template/AGENTS.md" | cmp - AGENTS.md
 
 # Paraglide generates its runtime during the build, before type checking.
 pnpm build

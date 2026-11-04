@@ -1,30 +1,17 @@
 # SvelteKit Template
-> A strongly opinionated SvelteKit starter template for AI-driven development
 
-| Category                  | Tools                                                     |
-| ------------------------- | --------------------------------------------------------- |
-| Framework                 | SvelteKit, @sveltejs/adapter-node                         |
-| UI & Styling              | Tailwind CSS, shadcn-svelte, @lucide/svelte, mode-watcher |
-| Data & Auth               | PostgreSQL, Drizzle ORM, Better Auth                      |
-| Forms & Validation        | SvelteKit remote functions, Zod                           |
-| Email                     | Resend, better-svelte-email                               |
-| Internationalisation      | Paraglide                                                 |
-| Testing & Quality         | Vitest, svelte-check, ESLint, Prettier                    |
-| Local Development         | Vite, pnpm, Podman                                        |
+An opinionated SvelteKit starter for AI-driven development.
 
-Recommended for bigger projects, but not included by default:
-- `Plausible` for Observability
-- `GlitchTip` for Error Tracking
-- `Playwright` for E2E testing
-
-## Contents
-- [Get Started](#get-started)
-- [Development Commands](#development-commands)
-- [Development Database](#development-database)
-- [Included](#included)
-- [Design](#design)
-- [MCP Servers](#mcp-servers)
-- [Assumptions](#assumptions)
+| Category             | Tools                                                     |
+| -------------------- | --------------------------------------------------------- |
+| Framework            | SvelteKit, @sveltejs/adapter-node                         |
+| UI & Styling         | Tailwind CSS, shadcn-svelte, @lucide/svelte, mode-watcher |
+| Data & Auth          | PostgreSQL, Drizzle ORM, Better Auth                      |
+| Forms & Validation   | SvelteKit remote functions, Zod                           |
+| Email                | Resend, better-svelte-email                               |
+| Internationalisation | Paraglide                                                 |
+| Testing & Quality    | Vitest, svelte-check, ESLint, Prettier                    |
+| Local Development    | Vite, pnpm, Podman                                        |
 
 ## Get Started
 
@@ -48,98 +35,31 @@ curl -fsSL https://raw.githubusercontent.com/kaufmann-dev/sveltekit-template/mai
 - The `form` component is left out because it depends on Superforms and formsnap. Forms use remote functions with the `field` components instead.
 - All listed shadcn-svelte components remain preinstalled. ESLint checks them, with narrowly scoped exceptions for the stock Button link forwarding and ChartTooltip callback parameter.
 
-## Development Commands
+## Requirements
 
-Use pnpm for project scripts:
+- Node 22.17 or newer, pnpm, curl, and tar for setup.
+- Podman for the generated app's local PostgreSQL database.
+
+## Repository Layout
+
+- `create.sh`: non-interactive installer.
+- `template/README.md`: development guide copied to the new app's `README.md`.
+- `template/AGENTS.md`: app-development instructions copied to the new app's `AGENTS.md`.
+- `scripts/verify-scaffold.sh`: fresh-app verification.
+- `.github/workflows/scaffold.yml`: automated verification.
+
+The installer copies the application documentation after `sv create` completes. It removes the `template/` directory, installer, and template verification files from the new app. This repository's README stays here; generated apps receive their own development guide.
+
+To test local changes, set `SVELTEKIT_TEMPLATE_DIR` to this checkout and choose a target outside it:
 
 ```bash
-pnpm dev
-pnpm check
-pnpm lint
-pnpm format
-pnpm build
-pnpm preview
+SVELTEKIT_TEMPLATE_DIR="$PWD" bash create.sh ../my-app
 ```
+
+For application commands, database setup, and included tooling, see [the application guide](template/README.md).
 
 ## Template Verification
 
 GitHub Actions verifies a fresh scaffold on pushes, pull requests, daily at 06:23 UTC, and manual runs. It enables verbose setup output and uses Node 24 and the latest setup CLIs, checks that the auth schema and a SQL migration exist, runs build, type checking, and lint, then checks production HTTP responses (200 for `/`, 404 for an unknown route). It does not test database connectivity or sign-in.
 
 From this template checkout, run the same check with `bash scripts/verify-scaffold.sh`. It creates and removes a temporary app and loads that app's `.env` for the production server. The workflow and verification script are not copied into generated applications.
-
-## Development Database
-
-`create.sh` writes these development values to `.env` and generates the Better Auth schema and the first Drizzle migration:
-
-```bash
-POSTGRES_USER="postgres"
-POSTGRES_PASSWORD="postgres"
-POSTGRES_DB="postgres"
-DATABASE_URL="postgres://postgres:postgres@localhost:5432/postgres"
-ORIGIN="http://localhost:5173"
-```
-
-Run PostgreSQL locally with Podman:
-
-```bash
-podman run \
-  --name postgres-sveltekit \
-  --env-file .env \
-  --publish 5432:5432 \
-  --volume postgres-sveltekit-data:/var/lib/postgresql/data \
-  --detach \
-  postgres:18-alpine
-```
-
-`ORIGIN` is the Better Auth base URL. Keep the generated `BETTER_AUTH_SECRET` value, or replace it with a new high-entropy secret. If you change `POSTGRES_USER`, `POSTGRES_PASSWORD`, or `POSTGRES_DB`, update `DATABASE_URL` to match.
-
-Apply the migrations:
-
-```bash
-pnpm drizzle-kit migrate
-```
-
-Useful Podman commands:
-
-```bash
-podman start postgres-sveltekit
-podman stop postgres-sveltekit
-podman logs postgres-sveltekit
-```
-
-## Included
-
-- `AGENTS.md` with SvelteKit 3, Svelte 5, shadcn-svelte, auth, database, testing, and tooling instructions.
-- `pnpm-workspace.yaml` with pnpm build-script approvals for the selected stack.
-- `.prettierignore` that skips vendored skills and generated Paraglide project files.
-- `.agents/skills/` and `skills-lock.json` with project-local skills, including the Svelte skills from `sveltejs/ai-tools`.
-- The official Svelte plugin for Claude Code and OpenCode, added by the `sv` `ai-tools` add-on. It bundles the Svelte MCP server, skills, and the Svelte file-editor subagent.
-- Svelte MCP configuration and Svelte file-editor subagents for Codex and Antigravity.
-- `create.sh`, the non-interactive setup script described in [Get Started](#get-started).
-
-## Design
-
-The template uses the stock shadcn-svelte preset generated by the CLI, including its colors, typography, radius, shadows, animations, and focus styling. It does not replace the generated stylesheet or add custom UI helpers.
-
-Use the generated components and theme tokens directly.
-
-## MCP Servers
-
-Enabled by default:
-
-- `svelte`
-
-Optional MCP servers:
-
-- `postgres` via `DATABASE_URL`
-- `resend` via `RESEND_API_KEY`
-
-If you decide to use them, Codex & OpenCode already have them configured, but disabled. For Antigravity & Claude Code, you will need to add the configuration manually.
-
-Claude Code and OpenCode get the `svelte` server through the Svelte plugin. Codex and Antigravity get it through `.codex/config.toml` and `.gemini/settings.json`.
-
-## Assumptions
-- `Node` 22.17 or newer is installed (required by SvelteKit 3)
-- `pnpm` is installed and used as the package manager
-- `curl` and `tar` are installed (used by the setup script)
-- `podman` is installed and used for the local development database
