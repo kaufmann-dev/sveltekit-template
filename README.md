@@ -28,81 +28,19 @@ Recommended for bigger projects, but not included by default:
 
 ## Get Started
 
-### 1. Copy this template into the project folder
-> [!NOTE]
-> Skip this step if you have already cloned this project from GitHub or created it from the GitHub template.
+Create a new app in `my-app`:
 
 ```bash
-mkdir my-app && cd my-app
-
-pnpm dlx degit kaufmann-dev/sveltekit-template . --mode=tar --force
+curl -fsSL https://raw.githubusercontent.com/kaufmann-dev/sveltekit-template/main/create.sh | bash -s -- my-app
 ```
 
-### 2. Create the configured SvelteKit app
-> [!WARNING]
-> This command will overwrite this `README.md`. Copy the command in step 3 now.
+`create.sh` downloads this template and runs `sv create` with the stack add-ons. It then installs the extra packages, initializes shadcn-svelte with the template theme and components, and puts the agent instructions in place as `AGENTS.md`. The target directory must be new or empty.
 
-```bash
-pnpm dlx sv create --template minimal --types ts \
-  --add tailwindcss="plugins:none" \
-  drizzle="database:postgresql+client:postgres.js+docker:no" \
-  better-auth="demo:none" \
-  experimental="features:async,remoteFunctions" \
-  eslint prettier \
-  vitest="usages:unit,component" \
-  paraglide="languageTags:en,de+demo:no" \
-  sveltekit-adapter="adapter:node" \
-  ai-tools="ide:claude-code,opencode+delivery:plugin" \
-  --install pnpm . --no-dir-check
-```
+It never prompts, so an agent can run the same command without cloning this repository.
 
-### 3. Overwrite the generated .md files
-```bash
-cp -f INSTRUCTIONS.md AGENTS.md && \
-  cp -f BACKUP_README.md README.md && \
-  rm -f INSTRUCTIONS.md BACKUP_README.md
-```
-
-### 4. Add the required non-`sv` packages
-```bash
-pnpm add mode-watcher @lucide/svelte zod resend better-svelte-email
-
-pnpm dlx shadcn-svelte@latest init \
-  --preset b27GcrTs \
-  --base-color neutral \
-  --css src/routes/layout.css \
-  --lib-alias '#lib' \
-  --components-alias '#lib/components' \
-  --ui-alias '#lib/components/ui' \
-  --utils-alias '#lib/utils' \
-  --hooks-alias '#lib/hooks'
-
-cp -f shadcn/layout.css src/routes/layout.css
-```
-
-The preset selects `rhea`, `neutral`, Lucide icons, Inter, a `0.45rem` radius, and the subtle menu accent. `init` asks once to confirm its changes to `src/routes/layout.css`; answer yes. The `cp` replaces that file with the template theme (see [Design](#design)).
-
-### 5. Install the shadcn-svelte components
-The `form` component is left out because it depends on Superforms and formsnap. Forms use remote functions with the `field` components instead.
-
-```bash
-pnpm dlx shadcn-svelte@latest add --yes \
-  accordion alert alert-dialog aspect-ratio attachment avatar badge breadcrumb bubble \
-  button button-group calendar card carousel chart checkbox collapsible command \
-  context-menu dialog drawer dropdown-menu empty field hover-card input input-group \
-  input-otp item kbd label marker menubar message native-select navigation-menu \
-  pagination popover progress radio-group range-calendar resizable scroll-area select \
-  separator sheet sidebar skeleton slider sonner spinner switch table tabs textarea \
-  toggle toggle-group tooltip
-
-mkdir -p src/lib/components && cp -r shadcn/components/. src/lib/components/
-rm -rf shadcn
-
-# Generated shadcn-svelte components are vendor code: keep them out of ESLint
-sed -i "s|^\tincludeIgnoreFile(gitignorePath),|&\n\t// shadcn-svelte components are generated vendor code.\n\t{ ignores: ['src/lib/components/ui/**'] },|" eslint.config.js
-
-pnpm format
-```
+- shadcn-svelte uses the `b27GcrTs` preset: `rhea`, `neutral`, Lucide icons, Inter, a `0.45rem` radius, and the subtle menu accent. The template's `shadcn/layout.css` then replaces the generated stylesheet (see [Design](#design)).
+- The `form` component is left out because it depends on Superforms and formsnap. Forms use remote functions with the `field` components instead.
+- Generated shadcn-svelte components in `src/lib/components/ui/` are vendor code and are excluded from ESLint.
 
 ## Development Commands
 
@@ -168,7 +106,8 @@ podman logs postgres-sveltekit
 - `.agents/skills/` and `skills-lock.json` with project-local skills, including the Svelte skills from `sveltejs/ai-tools`.
 - The official Svelte plugin for Claude Code and OpenCode, added by the `sv` `ai-tools` add-on. It bundles the Svelte MCP server, skills, and the Svelte file-editor subagent.
 - Svelte MCP configuration and Svelte file-editor subagents for Codex and Antigravity.
-- `shadcn/` with the shared design theme and UI helpers. Steps 4 and 5 apply it and delete the folder.
+- `create.sh`, the non-interactive setup script described in [Get Started](#get-started).
+- `shadcn/` with the shared design theme and UI helpers. The setup script applies it and deletes the folder.
 
 ## Design
 
@@ -197,4 +136,5 @@ Claude Code and OpenCode get the `svelte` server through the Svelte plugin. Code
 ## Assumptions
 - `Node` 22.17 or newer is installed (required by SvelteKit 3)
 - `pnpm` is installed and used as the package manager
+- `curl` and `tar` are installed (used by the setup script)
 - `podman` is installed and used for the local development database
