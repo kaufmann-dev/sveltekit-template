@@ -246,15 +246,15 @@ Avoid these legacy Svelte features in new or refactored code:
 ## Local Database and Deployment
 
 - **Database**: Use the manually managed Podman PostgreSQL database named `postgres-sveltekit` for local development. Treat production database provisioning as separate infrastructure.
-- **Debugging**: Keep deployment fixes scoped to the exact failing layer. Identify the failing command first in Coolify or Nixpacks before fixing it.
+- **Debugging**: Keep deployment fixes scoped to the exact failing layer. Identify the failing command first in Coolify or Railpack before fixing it.
 
-For Coolify and Nixpacks:
+For Coolify and Railpack:
 - If `pnpm-workspace.yaml` exists in a single-package app, keep a non-empty `packages` list with `.` included.
-- Use `engines.node` and `nixpacks.toml` to pin compatible Node behavior when dependencies require a minimum patch version. SvelteKit 3 requires Node 22.17 or newer.
+- Use `engines.node` to pin compatible Node behavior when dependencies require a minimum patch version. Railpack reads it as the runtime version; do not duplicate it in `railpack.json`. SvelteKit 3 requires Node 22.17 or newer.
 - In app code, read environment variables through `src/env.ts` and `$app/env/*`. In standalone scripts (seeds, migrations), read `process.env` and load `.env` only after checking that the file exists.
 - `adapter-node` no longer reads `ORIGIN`. Behind Coolify's reverse proxy, set `PROTOCOL_HEADER=x-forwarded-proto` and `HOST_HEADER=x-forwarded-host`, or set `paths.origin` in the `sveltekit()` options. `ORIGIN` remains the Better Auth base URL.
 - Validate seed script environment variables before calling Better Auth APIs.
 - Document and enforce minimum seeded account password lengths.
-- Let Nixpacks handle the install phase unless a project-specific reason requires otherwise.
+- Let Railpack handle the install phase unless a project-specific reason requires otherwise.
 - Prefer explicit deploy or runtime migration and seed steps when Coolify supports them.
 - Keep build-time migration and seed scripts idempotent when they must run during image builds.
