@@ -33,7 +33,7 @@ curl -fsSL https://raw.githubusercontent.com/kaufmann-dev/sveltekit-template/mai
 
 - shadcn-svelte uses the `b27GcrTs` preset: `rhea`, `neutral`, Lucide icons, Inter, a `0.45rem` radius, and the subtle menu accent. The generated stylesheet and components are kept unchanged.
 - The `form` component is left out because it depends on Superforms and formsnap. Forms use remote functions with the `field` components instead.
-- All listed shadcn-svelte components remain preinstalled. ESLint checks them, with narrowly scoped exceptions for the stock Button link forwarding and ChartTooltip callback parameter.
+- All listed shadcn-svelte components remain preinstalled. ESLint checks them with type-aware rules disabled, because typed linting cannot resolve types imported from other `.svelte` files (svelte-check still type-checks them), plus narrowly scoped exceptions for the stock Button link forwarding and ChartTooltip callback parameter.
 
 ## Requirements
 

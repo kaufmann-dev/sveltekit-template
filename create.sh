@@ -136,6 +136,12 @@ const end = source.lastIndexOf(');');
 if (end < 0) throw new Error('Could not locate ESLint configuration');
 const overrides = `,
 	{
+		// Typed linting cannot resolve types imported from other .svelte files, so stock
+		// components report false no-unsafe-* errors that svelte-check does not.
+		files: ['src/lib/components/ui/**'],
+		...ts.configs.disableTypeChecked
+	},
+	{
 		files: ['src/lib/components/ui/button/button.svelte'],
 		rules: {
 			// Generic wrapper accepts already-resolved internal or external URLs.

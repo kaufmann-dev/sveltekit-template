@@ -196,7 +196,7 @@ Avoid these legacy Svelte features in new or refactored code:
   {@render children()}
   ```
 - **Visual styling**: Use the stock shadcn-svelte components and generated theme in `src/routes/layout.css`. Preserve their default shadows, animations, and keyboard focus styling. Use theme tokens and component variants for consistent styling.
-- ESLint checks `src/lib/components/ui`, including customized components. Keep exceptions limited to the stock Button link forwarding and ChartTooltip callback parameter; do not ignore the directory or disable unrelated rules.
+- ESLint checks `src/lib/components/ui`, including customized components. Type-aware rules are disabled there (`ts.configs.disableTypeChecked`) because typed linting cannot resolve types imported from other `.svelte` files; svelte-check still type-checks them. Keep other exceptions limited to the stock Button link forwarding and ChartTooltip callback parameter; do not ignore the directory or disable unrelated rules.
 
 ## Backend and Services
 
